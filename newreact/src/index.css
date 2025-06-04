@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #000 !important; /* Cho dễ nhìn */
+  z-index: 10;
+}

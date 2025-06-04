@@ -1,0 +1,45 @@
+ services:
+  frontend:
+    build:
+      context: ./newreact
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+
+  backend:
+    build:
+      context: ./TestReact
+    container_name: spring-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+      sqlserver:
+        condition: service_started
+    environment:
+      - SPRING_DATA_REDIS_HOST=local:redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://host.docker.internal:1433;databaseName=TestReact;trustServerCertificate=true;
+      - SPRING_DATASOURCE_USERNAME=binhlthe
+      - SPRING_DATASOURCE_PASSWORD=123
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "yourStrong@Password"
+    ports:
+      - "1433:1433"
