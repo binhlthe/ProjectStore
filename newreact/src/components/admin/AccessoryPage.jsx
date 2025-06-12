@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaTrash, FaPlus } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
-import axios from 'axios';
+import axios from "axios";
 
 function AccessoryPage() {
     const navigate = useNavigate();
@@ -16,36 +16,46 @@ function AccessoryPage() {
 
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [selectedImage, setSelectedImage] = useState(null); // Modal image
+    const itemsPerPage = 6;
 
-    const itemsPerPage = 5;
+    const [selectedImage, setSelectedImage] = useState(null); // Modal image
 
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
-        fetchProducts();
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const handleClickOutside = (event) => {
-        if (dropdownContainerRef.current && !dropdownContainerRef.current.contains(event.target)) {
+        if (
+            dropdownContainerRef.current &&
+            !dropdownContainerRef.current.contains(event.target)
+        ) {
             setShowUserDropdown(false);
         }
     };
-
-    const fetchProducts = async () => {
-        try {
-            const response = await axios.get("http://localhost:8080/api/products/accessories");
-
-            console.log(response.data);
-            setProducts(response.data);
-        } catch (error) {
-            console.error("Lỗi khi tải sản phẩm:", error);
-        }
-    };
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8080/api/products/accessories"
+                );
+                console.log(response.data.content);
+                const productTops = response.data || [];
+                // Gọi tiếp API để lấy variants và tính giá nhỏ nhất
+                
+                setProducts(productTops);
+                console.log(products);
+            } catch (error) {
+                console.error("Lỗi khi tải sản phẩm:", error);
+            }
+        };
+        fetchProducts();
+    }, []);
 
     const handleView = (product) => {
-        alert(`Xem sản phẩm: ${product.name}`);
-        // navigate(`/admin/products/top/${product.id}`)
+        navigate(`/admin/product/${product.id}`)
     };
 
     const handleRemove = async (id) => {
@@ -79,6 +89,7 @@ function AccessoryPage() {
                         <span>Thêm sản phẩm</span>
                     </button>
                 </div>
+
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border rounded-lg shadow">
                         <thead className="bg-gray-300 text-left">
@@ -92,20 +103,25 @@ function AccessoryPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentItems.map((product) => (
-                                <tr key={product.id} className="hover:bg-gray-600 hover:text-white odd:bg-gray-200">
+                            {products.map((product) => (
+                                <tr
+                                    key={product.id}
+                                    className="hover:bg-gray-600 hover:text-white odd:bg-gray-200"
+                                >
                                     <td className="py-3 px-4 border-b">{product.id}</td>
                                     <td className="py-3 px-4 border-b">
                                         <img
-                                            src={product.image}
+                                            src={product.thumbnailImage}
                                             alt={product.name}
                                             className="w-10 h-10 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
-                                            onClick={() => setSelectedImage(product.image)}
+                                            onClick={() => setSelectedImage(product.thumbnailImage)}
                                         />
                                     </td>
                                     <td className="py-3 px-4 border-b">{product.name}</td>
-                                    <td className="py-3 px-4 border-b">{product.price.toLocaleString("vi-VN")}₫</td>
-                                    <td className="py-3 px-4 border-b">{product.stock}</td>
+                                    <td className="py-3 px-4 border-b">
+                                        {Number(product.price).toLocaleString("vi-VN")}₫
+                                    </td>
+                                    <td className="py-3 px-4 border-b">{product.totalQuantity}</td>
                                     <td className="py-3 px-4 border-b text-center">
                                         <button
                                             onClick={() => handleView(product)}
@@ -124,7 +140,7 @@ function AccessoryPage() {
                             ))}
                             {currentItems.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" className="text-center py-4">
+                                    <td colSpan="6" className="text-center py-4">
                                         Không có sản phẩm nào.
                                     </td>
                                 </tr>
@@ -139,28 +155,31 @@ function AccessoryPage() {
                         <button
                             key={i}
                             onClick={() => setCurrentPage(i + 1)}
-                            className={`px-3 py-1 rounded ${currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
+                            className={`px-3 py-1 rounded ${currentPage === i + 1
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                         >
                             {i + 1}
                         </button>
                     ))}
                 </div>
-                {/* Modal hiển thị ảnh */}
-                {selectedImage && (
-                    <div
-                        className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
-                        onClick={() => setSelectedImage(null)}
-                    >
-                        <img
-                            src={selectedImage}
-                            alt="Ảnh sản phẩm"
-                            className="max-w-[90%] max-h-[80%] object-contain rounded shadow-lg"
-                            onClick={(e) => e.stopPropagation()}
-                        />
-                    </div>
-                )}
             </div>
+
+            {/* Modal hiển thị ảnh */}
+            {selectedImage && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <img
+                        src={selectedImage}
+                        alt="Ảnh sản phẩm"
+                        className="max-w-[90%] max-h-[80%] object-contain rounded shadow-lg"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 }

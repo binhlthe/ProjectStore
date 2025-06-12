@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
-import UserDropdown from "../UserSidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
 import { FiFilter } from "react-icons/fi";
@@ -15,7 +14,7 @@ function TopPage() {
 
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState('');
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownContainerRef = useRef(null);
@@ -39,10 +38,36 @@ function TopPage() {
           }
         });
         console.log(res.data);
-        if (Array.isArray(res.data.content)) {
+        const productTops = res.data.content || [];
+        // const productTopsWithPrices = await Promise.all(
+        //   productTops.map(async (product) => {
+        //     try {
+        //       console.log(product.id);
+        //       const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${product.id}`);
+        //       const variants = variantRes.data || [];
 
-          setProducts(res.data.content);
-        } else {
+        //       // Tìm giá thấp nhất
+        //       const lowestPrice = variants.length > 0
+        //         ? Math.min(...variants.map(v => v.price))
+        //         : null;
+
+        //       // Gán giá thấp nhất vào object product mới (không ảnh hưởng entity)
+        //       return {
+        //         ...product,
+        //         price: lowestPrice
+        //       };
+        //     } catch (err) {
+        //       console.error("Error fetching variants:", err);
+        //       return {
+        //         ...product,
+        //         price: null
+        //       };
+        //     }
+        //   })
+        // );
+        setProducts(productTops); 
+        if (!Array.isArray(res.data.content)) {
+
           console.error("Dữ liệu trả về không phải mảng:", res.data.content);
           setProducts([]); // fallback an toàn
         }
@@ -73,6 +98,7 @@ function TopPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  console.log(products);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -137,14 +163,14 @@ function TopPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+          {Array.isArray(products) && products.map((product) => (
             <div
               key={product.id}
               onClick={() => handleProductClick(product.id)}
               className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-md transition-all cursor-pointer"
             >
               <img
-                src={product.image}
+                src={product.thumbnailImage}
                 alt={product.name}
                 className="w-full h-auto object-contain aspect-[3/4] rounded-md mb-2"
               />

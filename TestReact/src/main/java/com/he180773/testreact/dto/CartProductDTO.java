@@ -21,8 +21,6 @@ public class CartProductDTO {
     public CartProductDTO(Product product, Integer quantity) {
         this.id = product.getId();
         this.name = product.getName();
-        this.image = product.getImage();
-        this.price = product.getPrice();
         this.quantity = quantity;
         this.category = product.getCategory();
         this.arrivedDate = product.getArrivedDate();

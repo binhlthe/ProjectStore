@@ -3,11 +3,11 @@
 import { Link, useLocation } from "react-router-dom";
 
 import React from "react";
-import { FaHome, FaPlusCircle, FaBoxOpen, FaClipboardList, FaUserAlt } from "react-icons/fa";
+import { FaHome, FaChartLine , FaBoxOpen, FaClipboardList, FaUserAlt } from "react-icons/fa";
 
 const menu = [
   { label: "Dashboard", icon: <FaHome />, path: "/admin" },
-  { label: "Thêm sản phẩm", icon: <FaPlusCircle />, path: "/add-product" },
+  { label: "Doanh Thu", icon: <FaChartLine />, path: "/revenue" },
   { label: "Quản lí sản phẩm", icon: <FaBoxOpen />, path: "/admin/product" },
   { label: "Đơn hàng", icon: <FaClipboardList />, path: "/order" },
 ];

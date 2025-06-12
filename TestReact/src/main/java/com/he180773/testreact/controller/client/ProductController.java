@@ -1,10 +1,9 @@
 package com.he180773.testreact.controller.client;
 
+import com.he180773.testreact.dto.ProductDTO;
 import com.he180773.testreact.entity.Product;
-import com.he180773.testreact.entity.Size;
 import com.he180773.testreact.repository.ProductRepository;
 import com.he180773.testreact.service.ProductService;
-import com.he180773.testreact.service.ProductSizeService;
 import com.he180773.testreact.service.SizeService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -23,20 +23,23 @@ public class ProductController {
 
     private final ProductService productService;
     private final ProductRepository productRepository;
-    private final ProductSizeService productSizeService;
     private final SizeService sizeService;
 
-    public ProductController(ProductService productService, ProductRepository productRepository,ProductSizeService productSizeService,
+    public ProductController(ProductService productService, ProductRepository productRepository,
                              SizeService sizeService) {
         this.productService = productService;
         this.productRepository = productRepository;
-        this.productSizeService = productSizeService;
         this.sizeService = sizeService;
     }
 
     @GetMapping("/tops")
     public ResponseEntity<List<Product>> getTop( HttpServletResponse response) {
         List<Product> products= productService.findAllByCategory("top");
+        System.out.println("products: "+products
+        );
+        for(Product product:products){
+            System.out.println(product.getName());
+        }
         if(products.size()>0) {
             return ResponseEntity.ok(products);
         }
@@ -67,13 +70,6 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    @GetMapping("/{id}/sizes")
-    public ResponseEntity<List<Size>> getProductSizes(@PathVariable Long id) {
-        List<Long> sid = productSizeService.getSizeByProductId(id);
-        List<Size> sizes= sizeService.getSizesByIds(sid);
-
-        return ResponseEntity.ok(sizes);
-    }
 
     @GetMapping("/sort/tops")
     public Page<Product> getTopProducts(@RequestParam(defaultValue = "0") int page,
@@ -81,7 +77,8 @@ public class ProductController {
                                         @RequestParam(required = false) String sort,
                                         @RequestParam(required = false) String name,
                                         @RequestParam(required = false) String priceRange) {
-        Pageable pageable;
+        Pageable pageable ;
+
         switch (sort.toLowerCase()) {
             case "price-asc":
                 pageable = PageRequest.of(page, size, Sort.by("price").ascending());
@@ -226,5 +223,18 @@ public class ProductController {
             } catch (NumberFormatException ignored) {}
         }
         return productService.getNewArrivalsSorted(pageable,name, minPrice, maxPrice);
+    }
+
+    @PostMapping("/add-top")
+    public Product addTop(@RequestBody ProductDTO dto) {
+        System.out.println(dto.toString());
+        Product product = new Product();
+        product.setName(dto.getName());
+        product.setPrice(dto.getPrice());
+        product.setCategory(dto.getCategory());
+        product.setArrivedDate(dto.getArrivedDate());
+        product.setThumbnailImage(dto.getThumbnailImage());
+        product.setCreatedAt(LocalDateTime.now());
+        return productRepository.save(product);
     }
 }

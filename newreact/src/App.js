@@ -17,6 +17,12 @@ import ProductPage from "./components/admin/ProductPage";
 import TopPageAdmin from './components/admin/TopPage';
 import BottomPageAdmin from './components/admin/BottomPage';
 import AccessoryPageAdmin from './components/admin/AccessoryPage'
+import ProductDetailAdmin from './components/admin/ProductDetail';
+import AddTopPage from './components/admin/AddTopPage';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+
 
 function App() {
   return (
@@ -37,6 +43,8 @@ function App() {
            <Route path="/admin/product/top" element={<TopPageAdmin />} />
            <Route path="/admin/product/bottom" element={<BottomPageAdmin />} />
            <Route path="/admin/product/accessory" element={<AccessoryPageAdmin />} />
+           <Route path="/admin/product/:id" element={<ProductDetailAdmin />} />
+           <Route path="/admin/product/top/add" element={<AddTopPage />} />
           <Route element={<ProtectedRoute />}>
           </Route>
 

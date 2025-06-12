@@ -15,7 +15,7 @@ function BottomPage() {
 
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState('');
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownContainerRef = useRef(null);
@@ -143,7 +143,7 @@ const [priceFilter, setPriceFilter] = useState("");
               className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-md transition-all cursor-pointer"
             >
               <img
-                src={product.image}
+                src={product.thumbnailImage}
                 alt={product.name}
                 className="w-full h-auto object-contain aspect-[3/4] rounded-md mb-2"
               />

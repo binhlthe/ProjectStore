@@ -1,6 +1,6 @@
 // AdminDashboard.jsx
 import React, { useState, useRef, useEffect } from "react";
-import { FaBoxOpen, FaSearch, FaShoppingCart, FaClipboardList, FaPlusCircle, FaBars, FaUser, FaShoppingBag, FaTshirt } from "react-icons/fa";
+import { FaBoxOpen,  FaClipboardList, FaChartLine } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import UserDropdown from "../UserSidebar"; // giả định đã có UserSidebar.jsx
 import AdminSidebar from "./AdminSidebar";
@@ -27,10 +27,10 @@ function AdminDashboard() {
 
   const cards = [
     {
-      icon: <FaPlusCircle className="text-3xl text-blue-500" />,
-      title: "Thêm sản phẩm",
+      icon: <FaChartLine className="text-3xl text-blue-500" />,
+      title: "Doanh Thu",
       description: "Thêm các sản phẩm mới vào cửa hàng",
-      onClick: () => navigate("/admin/add-product"),
+      onClick: () => navigate("/admin/revenue"),
     },
     {
       icon: <FaBoxOpen className="text-3xl text-green-500" />,

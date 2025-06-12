@@ -16,13 +16,13 @@ function TopPage() {
 
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 6;
 
     const [selectedImage, setSelectedImage] = useState(null); // Modal image
 
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
-        fetchProducts();
+        
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
@@ -35,21 +35,27 @@ function TopPage() {
             setShowUserDropdown(false);
         }
     };
-
-    const fetchProducts = async () => {
-        try {
-            const response = await axios.get(
-                "http://localhost:8080/api/products/tops"
-            );
-            setProducts(response.data);
-        } catch (error) {
-            console.error("Lỗi khi tải sản phẩm:", error);
-        }
-    };
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get(
+                    "http://localhost:8080/api/products/tops"
+                );
+                console.log(response.data.content);
+                const productTops = response.data || [];
+                // Gọi tiếp API để lấy variants và tính giá nhỏ nhất
+                
+                setProducts(productTops);
+                console.log(products);
+            } catch (error) {
+                console.error("Lỗi khi tải sản phẩm:", error);
+            }
+        };
+        fetchProducts();
+    }, []);
 
     const handleView = (product) => {
-        alert(`Xem sản phẩm: ${product.name}`);
-        // navigate(`/admin/products/top/${product.id}`)
+        navigate(`/admin/product/${product.id}`)
     };
 
     const handleRemove = async (id) => {
@@ -76,7 +82,7 @@ function TopPage() {
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">Danh sách sản phẩm Top</h2>
                     <button
-                        onClick={() => navigate("/admin/products/top/add")}
+                        onClick={() => navigate("/admin/product/top/add")}
                         className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                     >
                         <FaPlus />
@@ -97,7 +103,7 @@ function TopPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentItems.map((product) => (
+                            {products.map((product) => (
                                 <tr
                                     key={product.id}
                                     className="hover:bg-gray-600 hover:text-white odd:bg-gray-200"
@@ -105,17 +111,17 @@ function TopPage() {
                                     <td className="py-3 px-4 border-b">{product.id}</td>
                                     <td className="py-3 px-4 border-b">
                                         <img
-                                            src={product.image}
+                                            src={product.thumbnailImage}
                                             alt={product.name}
                                             className="w-10 h-10 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
-                                            onClick={() => setSelectedImage(product.image)}
+                                            onClick={() => setSelectedImage(product.thumbnailImage)}
                                         />
                                     </td>
                                     <td className="py-3 px-4 border-b">{product.name}</td>
                                     <td className="py-3 px-4 border-b">
-                                        {product.price.toLocaleString("vi-VN")}₫
+                                        {Number(product.price).toLocaleString("vi-VN")}₫
                                     </td>
-                                    <td className="py-3 px-4 border-b">{product.stock}</td>
+                                    <td className="py-3 px-4 border-b">{product.totalQuantity}</td>
                                     <td className="py-3 px-4 border-b text-center">
                                         <button
                                             onClick={() => handleView(product)}

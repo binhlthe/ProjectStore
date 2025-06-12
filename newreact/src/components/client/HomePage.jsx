@@ -16,11 +16,12 @@ function HomePage() {
     // Lấy từ localStorage khi load lại trang
     const cached = localStorage.getItem("user");
     return cached ? JSON.parse(cached) : null;
-    
+
   });
   const [tops, setTops] = useState([]);
   const [bottoms, setBottoms] = useState([]);
   const [accessories, setAccessories] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
 
   const navigate = useNavigate();
 
@@ -28,23 +29,140 @@ function HomePage() {
   const dropdownContainerRef = useRef(null); // Ref for the div wrapping user icon and dropdown
 
   useEffect(() => {
-    
+
 
     const fetchProducts = async () => {
       try {
         const res1 = await axios.get('http://localhost:8080/api/products/tops');
         const res2 = await axios.get('http://localhost:8080/api/products/bottoms');
-        const res3 = await axios.get('http://localhost:8080/api/products/new-arrivals');
-        console.log(res1.data)
-        setTops(res1.data || []);
-        setBottoms(res2.data || []);
-        setAccessories(res3.data || [])
+        const res3 = await axios.get('http://localhost:8080/api/products/accessories');
+        const res4 = await axios.get('http://localhost:8080/api/products/new-arrivals');
+        console.log(res1.data);
+        const productTops = res1.data || [];
+        const productBottoms = res2.data || [];
+        const productAccessories = res3.data || [];
+        const productNewArrivals = res4.data || [];
+        // Gọi tiếp API để lấy variants và tính giá nhỏ nhất
+        const productTopsWithPrices = await Promise.all(
+          productTops.map(async (product) => {
+            try {
+              console.log(product.id);
+              const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${product.id}`);
+              const variants = variantRes.data || [];
+
+              // Tìm giá thấp nhất
+              const lowestPrice = variants.length > 0
+                ? Math.min(...variants.map(v => v.price))
+                : null;
+
+              // Gán giá thấp nhất vào object product mới (không ảnh hưởng entity)
+              return {
+                ...product,
+                price: lowestPrice
+              };
+            } catch (err) {
+              console.error("Error fetching variants:", err);
+              return {
+                ...product,
+                price: null
+              };
+            }
+          })
+        );
+
+        const productBottomsWithPrices = await Promise.all(
+          productBottoms.map(async (product) => {
+            try {
+              console.log(product.id);
+              const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${product.id}`);
+              const variants = variantRes.data || [];
+
+              // Tìm giá thấp nhất
+              const lowestPrice = variants.length > 0
+                ? Math.min(...variants.map(v => v.price))
+                : null;
+
+              // Gán giá thấp nhất vào object product mới (không ảnh hưởng entity)
+              return {
+                ...product,
+                price: lowestPrice
+              };
+            } catch (err) {
+              console.error("Error fetching variants:", err);
+              return {
+                ...product,
+                price: null
+              };
+            }
+          })
+        );
+
+         const productAccessoriesWithPrices = await Promise.all(
+          productAccessories.map(async (product) => {
+            try {
+              console.log(product.id);
+              const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${product.id}`);
+              const variants = variantRes.data || [];
+
+              // Tìm giá thấp nhất
+              const lowestPrice = variants.length > 0
+                ? Math.min(...variants.map(v => v.price))
+                : null;
+
+              // Gán giá thấp nhất vào object product mới (không ảnh hưởng entity)
+              return {
+                ...product,
+                price: lowestPrice
+              };
+            } catch (err) {
+              console.error("Error fetching variants:", err);
+              return {
+                ...product,
+                price: null
+              };
+            }
+          })
+        );
+
+        const productNewArrivalsWithPrices = await Promise.all(
+          productNewArrivals.map(async (product) => {
+            try {
+              console.log(product.id);
+              const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${product.id}`);
+              const variants = variantRes.data || [];
+
+              // Tìm giá thấp nhất
+              const lowestPrice = variants.length > 0
+                ? Math.min(...variants.map(v => v.price))
+                : null;
+
+              // Gán giá thấp nhất vào object product mới (không ảnh hưởng entity)
+              return {
+                ...product,
+                price: lowestPrice
+              };
+            } catch (err) {
+              console.error("Error fetching variants:", err);
+              return {
+                ...product,
+                price: null
+              };
+            }
+          })
+        );
+
+        setTops(res1.data); // Lưu vào state đã có price
+        console.log(tops);
+        setBottoms(res2.data);
+        setAccessories(res3.data);
+        setNewArrivals(res4.data);
+
       } catch (err) {
         console.error("Error fetching products:", err);
       }
     };
 
-    
+
     fetchProducts();
   }, []);
 
@@ -60,19 +178,19 @@ function HomePage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  function handleViewTop(){
+  function handleViewTop() {
     navigate("/product/top");
   }
 
-  function handleViewBottom(){
+  function handleViewBottom() {
     navigate("/product/bottom");
   }
 
-  function handleViewNewArrival(){
+  function handleViewNewArrival() {
     navigate("/product/new-arrival");
   }
 
-  function handleViewAccessory(){
+  function handleViewAccessory() {
     navigate("/product/accessory");
   }
 
@@ -81,39 +199,39 @@ function HomePage() {
   }, []);
 
   const ProductDetail = ({ product }) => {
-  const navigate = useNavigate(); // Hook điều hướng
+    const navigate = useNavigate(); // Hook điều hướng
 
-  const handleClick = () => {
-    navigate(`/product/${product.id}`); // Điều hướng sang trang chi tiết
+    const handleClick = () => {
+      navigate(`/product/${product.id}`); // Điều hướng sang trang chi tiết
+    };
+
+    return (
+      <div
+        className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-md transition-all cursor-pointer"
+        onClick={handleClick}
+      >
+        <img
+          src={product.thumbnailImage}
+          alt={product.name}
+          className="w-full h-auto object-contain aspect-[3/4] rounded-md mb-2"
+        />
+
+        <h3 className="text-lg font-semibold line-clamp-2 min-h-[3.5rem]">
+          {product.name}
+        </h3>
+
+        <p className="text-red-600">{Number(product.price).toLocaleString('vi-VN')} ₫</p>
+      </div>
+    );
   };
 
-  return (
-    <div
-      className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-md transition-all cursor-pointer"
-      onClick={handleClick}
-    >
-      <img
-  src={product.image}
-  alt={product.name}
-  className="w-full h-auto object-contain aspect-[3/4] rounded-md mb-2"
-/>
 
-      <h3 className="text-lg font-semibold line-clamp-2 min-h-[3.5rem]">
-  {product.name}
-</h3>
-
-      <p className="text-red-600">{Number(product.price).toLocaleString('vi-VN')} ₫</p>
-    </div>
-  );
-};
-
-  
 
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Top Bar */}
-      
-      <Navbar user={user}/>
+
+      <Navbar user={user} />
       {/* Sidebar */}
       <Sidebar user={user} />
 
@@ -121,7 +239,7 @@ function HomePage() {
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-8 ">
         {/* Removed the overlay div as requested */}
 
-        
+
         <div>
           <img
             src="/images/banner.png"
@@ -149,7 +267,7 @@ function HomePage() {
               1024: { slidesPerView: 3 },
             }}
           >
-            {accessories.map((product, index) => (
+            {newArrivals.map((product, index) => (
               <SwiperSlide key={index}>
                 <ProductDetail product={product} />
               </SwiperSlide>
@@ -239,7 +357,7 @@ function HomePage() {
           </Swiper>
         </section>
 
-        <Footer/>
+        <Footer />
       </main>
     </div>
   );
