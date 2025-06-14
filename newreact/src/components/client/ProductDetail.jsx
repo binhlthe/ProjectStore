@@ -15,15 +15,24 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState('');
   const [currentImage, setCurrentImage] = useState(null);
 
+  const colorOptions = [
+    'Trắng', 'Đen', 'Xám', 'Xanh navy', 'Xanh dương', 'Xanh lá',
+    'Hồng', 'Đỏ', 'Nâu', 'Cam', 'Vàng', 'Be', 'Tím'
+  ];
+
+  const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+  console.log(variants);
   
-
-
-  const allColors = [...new Set(variants.map(v => v.color))].sort();
+  const allColors = [...new Set(variants.map(v => v.color))].sort(
+  (a, b) => colorOptions.indexOf(a) - colorOptions.indexOf(b)
+);
   const allSizes = [...new Set(variants.map(v => v.size))].sort((a, b) => {
     const order = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
     return order.indexOf(a) - order.indexOf(b);
   });
 
+  console.log(allColors);
   // Những size có thể chọn theo selectedColor
   const availableSizes = selectedColor
     ? variants.filter(v => v.color === selectedColor).map(v => v.size)
@@ -57,10 +66,10 @@ function ProductDetail() {
   const variantForImage = variants.find(v => v.color === selectedColor);
   const imagesToShow = selectedVariant?.images || variantForImage?.images || [product?.thumbnailImage];
 
-const imagesToDisplay =
-  selectedVariant?.images ||
-  variants.find(v => v.color === selectedColor)?.images ||
-  [];
+  const imagesToDisplay =
+    selectedVariant?.images ||
+    variants.find(v => v.color === selectedColor)?.images ||
+    [];
 
 
   const { addToCart } = useCart();
@@ -76,7 +85,14 @@ const imagesToDisplay =
 
         // Lấy danh sách biến thể
         const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
-        const variantList = variantRes.data || [];
+        const variantList = (variantRes.data || []).sort((a, b) => {
+          const colorDiff = colorOptions.indexOf(a.color) - colorOptions.indexOf(b.color);
+          if (colorDiff !== 0) return colorDiff;
+          return sizeOptions.indexOf(a.size) - sizeOptions.indexOf(b.size);
+        });
+
+
+        console.log(variantList);
 
         if (variantList.length > 0) {
           const allImages = variantList.flatMap(v => v.images || []);
@@ -125,14 +141,14 @@ const imagesToDisplay =
     fetchProfile();
   }, [id]);
 
-useEffect(() => {
-  if (selectedColor) {
-    const variant = variants.find(v => v.color === selectedColor);
-    if (variant && variant.images?.length > 0) {
-      setCurrentImage(variant.images[0]);
+  useEffect(() => {
+    if (selectedColor) {
+      const variant = variants.find(v => v.color === selectedColor);
+      if (variant && variant.images?.length > 0) {
+        setCurrentImage(variant.images[0]);
+      }
     }
-  }
-}, [selectedColor]);
+  }, [selectedColor]);
 
   const handleAddToCart = () => {
     const selectedVariant = variants.find(
@@ -171,29 +187,29 @@ useEffect(() => {
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg p-6 shadow-md">
           <div className="grid grid-cols-6 gap-6">
-  {/* Danh sách ảnh nhỏ bên trái */}
-  <div className="flex flex-col col-span-1 gap-3">
-    {imagesToDisplay.map((img, index) => (
-      <img
-        key={index}
-        src={img}
-        alt={`variant image ${index}`}
-        className={`w-full h-24 object-cover rounded cursor-pointer border 
+            {/* Danh sách ảnh nhỏ bên trái */}
+            <div className="flex flex-col col-span-1 gap-3">
+              {imagesToDisplay.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`variant image ${index}`}
+                  className={`w-full h-24 object-cover rounded cursor-pointer border 
           ${currentImage === img ? 'border-black' : 'border-gray-200'}`}
-        onClick={() => setCurrentImage(img)}
-      />
-    ))}
-  </div>
+                  onClick={() => setCurrentImage(img)}
+                />
+              ))}
+            </div>
 
-  {/* Ảnh lớn chính */}
-  <div className="col-span-5 flex items-center justify-center">
-    <img
-      src={currentImage || product?.thumbnailImage}
-      alt="main product"
-      className="w-full h-[600px] object-contain rounded-lg"
-    />
-  </div>
-</div>
+            {/* Ảnh lớn chính */}
+            <div className="col-span-5 flex items-center justify-center">
+              <img
+                src={currentImage || product?.thumbnailImage}
+                alt="main product"
+                className="w-full h-[600px] object-contain rounded-lg"
+              />
+            </div>
+          </div>
 
 
           <div className="flex flex-col justify-between">

@@ -16,15 +16,14 @@ function AccessoryPage() {
 
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
+    const [totalPages, setTotalPages] = useState(1);
+    const itemsPerPage = 5;
 
     const [selectedImage, setSelectedImage] = useState(null); // Modal image
 
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
-        
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const handleClickOutside = (event) => {
@@ -35,27 +34,24 @@ function AccessoryPage() {
             setShowUserDropdown(false);
         }
     };
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(
-                    "http://localhost:8080/api/products/accessories"
+                    `http://localhost:8080/api/admin/products/accessories?page=${currentPage - 1}&size=${itemsPerPage}`
                 );
-                console.log(response.data.content);
-                const productTops = response.data || [];
-                // Gọi tiếp API để lấy variants và tính giá nhỏ nhất
-                
-                setProducts(productTops);
-                console.log(products);
+                setProducts(response.data.content);
+                setTotalPages(response.data.totalPages);
             } catch (error) {
                 console.error("Lỗi khi tải sản phẩm:", error);
             }
         };
         fetchProducts();
-    }, []);
+    }, [currentPage]);
 
     const handleView = (product) => {
-        navigate(`/admin/product/${product.id}`)
+        navigate(`/admin/product/${product.id}`);
     };
 
     const handleRemove = async (id) => {
@@ -68,11 +64,6 @@ function AccessoryPage() {
         }
     };
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(products.length / itemsPerPage);
-
     return (
         <div className="flex h-screen bg-gray-100">
             <Navbar user={user} />
@@ -82,7 +73,7 @@ function AccessoryPage() {
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">Danh sách sản phẩm Accessory</h2>
                     <button
-                        onClick={() => navigate("/admin/products/top/add")}
+                        onClick={() => navigate("/admin/product/accessory/add")}
                         className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                     >
                         <FaPlus />
@@ -138,7 +129,7 @@ function AccessoryPage() {
                                     </td>
                                 </tr>
                             ))}
-                            {currentItems.length === 0 && (
+                            {products.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="text-center py-4">
                                         Không có sản phẩm nào.

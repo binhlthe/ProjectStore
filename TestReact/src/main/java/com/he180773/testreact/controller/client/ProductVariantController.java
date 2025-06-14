@@ -88,6 +88,7 @@ public class ProductVariantController {
                     .orElse(dto.getPrice()); // fallback nếu có lỗi (hiếm)
 
             product.setPrice(minPrice);
+            updateProductQuantity(product.getId());
             productRepository.save(product);
 
 
@@ -104,7 +105,44 @@ public class ProductVariantController {
         ProductVariant productVariant = productVariantRepository.findById(id).get();
         productVariant.setQuantity( dto.getQuantity());
         productVariantRepository.save(productVariant);
+        updateProductQuantity(productVariant.getProductId());
         return ResponseEntity.ok("hi");
+    }
+
+    @PutMapping("/update-images/{id}")
+    public ResponseEntity<?> updateImages(@PathVariable Long id, @RequestBody List<String> images) {
+        String imageJson = JsonMapper.listToJson(images);
+        System.out.println("Images:  "+ images);
+        System.out.println("ideee: "+id);
+        List<ProductVariant> variants = productVariantRepository.findAllById(id);
+        for(ProductVariant variant : variants) {
+            variant.setImage(imageJson);
+        }
+        productVariantRepository.saveAll(variants);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateVariant(@PathVariable Long id, @RequestBody ProductVariantDTO dto) {
+        ProductVariant productVariant = productVariantRepository.findById(id).get();
+        productVariant.setPrice(dto.getPrice());
+        productVariant.setQuantity(dto.getQuantity());
+        productVariantRepository.save(productVariant);
+        updateProductQuantity(productVariant.getProductId());
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    public void updateProductQuantity(Long id){
+        Product product = productRepository.findById(id).get();
+        List<ProductVariant> variants = productVariantRepository.findAllByProductId(id);
+        int quantity = 0;
+        for(ProductVariant variant : variants) {
+            quantity += variant.getQuantity();
+        }
+        product.setTotalQuantity(quantity);
+        productRepository.save(product);
     }
 
 

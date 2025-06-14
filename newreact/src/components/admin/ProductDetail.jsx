@@ -6,6 +6,11 @@ import Slider from 'react-slick';
 import Sidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
 import { FaChevronLeft, FaChevronRight, FaTimes, FaEdit, FaEyeSlash } from 'react-icons/fa';
+import AddVariantModel from './AddVariantModel';
+import AddSizeModel from './AddSizeModel';
+import EditVariantModel from './EditVariantModel';
+import EditColorImagesModel from './EditColorImagesModel';
+
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -19,6 +24,9 @@ const ProductDetail = () => {
   const [selectedColorForSize, setSelectedColorForSize] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [variantToEdit, setVariantToEdit] = useState(null);
+  const [isEditColorModalOpen, setIsEditColorModalOpen] = useState(false);
+  const [editColorImages, setEditColorImages] = useState([]);
+
 
 
   const [user, setUser] = useState(() => {
@@ -31,7 +39,12 @@ const ProductDetail = () => {
     'Trắng', 'Đen', 'Xám', 'Xanh navy', 'Xanh dương', 'Xanh lá',
     'Hồng', 'Đỏ', 'Nâu', 'Cam', 'Vàng', 'Be', 'Tím'
   ];
+
+
+
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+  const sizeOrder = ["XS", "S", "M", "L", "XL", "XXL"];
 
   const [newVariant, setNewVariant] = useState({
     color: '',
@@ -104,8 +117,14 @@ const ProductDetail = () => {
       setIsAddModalOpen(false);
       setNewVariant({ color: '', size: '', price: '', quantity: '', images: [], imageFiles: [] });
 
-      const res = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
-      setVariants(res.data || []);
+      const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
+      const variantList = (variantRes.data || []).sort((a, b) => {
+        const colorDiff = colorOptions.indexOf(a.color) - colorOptions.indexOf(b.color);
+        if (colorDiff !== 0) return colorDiff;
+        return sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size);
+      });
+
+      setVariants(variantList);
     } catch (error) {
       console.error("Lỗi khi thêm mẫu:", error);
     }
@@ -154,10 +173,13 @@ const ProductDetail = () => {
       setIsAddSizeModalOpen(false);
       setNewVariant({ color: '', size: '', price: '', quantity: '', images: [], imageFiles: [] });
 
-      const refreshed = await axios.get(
-        `http://localhost:8080/api/productVariant/product/${id}`
-      );
-      setVariants(refreshed.data || []);
+      const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
+      const variantList = (variantRes.data || []).sort((a, b) => {
+        const colorDiff = colorOptions.indexOf(a.color) - colorOptions.indexOf(b.color);
+        if (colorDiff !== 0) return colorDiff;
+        return sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size);
+      });
+      setVariants(variantList);
     } catch (e) {
       console.error("Lỗi khi thêm size:", e);
     }
@@ -186,7 +208,9 @@ const ProductDetail = () => {
         quantity: parseInt(variantToEdit.quantity),
       };
 
-      await axios.put(`http://localhost:8080/api/productVariant/${variantToEdit.id}`, payload);
+      console.log(variantToEdit.id);
+
+      await axios.put(`http://localhost:8080/api/productVariant/update/${variantToEdit.id}`, payload);
       setIsEditModalOpen(false);
       const refreshed = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
       setVariants(refreshed.data || []);
@@ -194,6 +218,9 @@ const ProductDetail = () => {
       console.error("Lỗi khi cập nhật mẫu:", e);
     }
   };
+
+
+
 
 
 
@@ -207,7 +234,13 @@ const ProductDetail = () => {
         document.title = productData.name;
 
         const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
-        const variantList = variantRes.data || [];
+        const variantList = (variantRes.data || []).sort((a, b) => {
+          const colorDiff = colorOptions.indexOf(a.color) - colorOptions.indexOf(b.color);
+          if (colorDiff !== 0) return colorDiff;
+          return sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size);
+        });
+
+
         setVariants(variantList);
 
         const lowestPrice = variantList.length > 0
@@ -253,7 +286,7 @@ const ProductDetail = () => {
 
   const sliderSettings = {
     dots: true,
-    infinite: true,
+    infinite: selectedImages.length > 1,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -269,6 +302,8 @@ const ProductDetail = () => {
   }, {});
 
   const usedColors = Object.keys(groupedByColor);
+
+
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -344,9 +379,19 @@ const ProductDetail = () => {
                     setSelectedColorForSize(activeColor);
                     setIsAddSizeModalOpen(true);
                   }}
-                  className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="mt-4  bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                 >
                   + Thêm size cho màu này
+                </button>
+                <button
+                  onClick={() => {
+                    const variant = groupedByColor[activeColor]?.[0];
+                    setEditColorImages(variant?.images || []);
+                    setIsEditColorModalOpen(true);
+                  }}
+                  className="bg-yellow-500 ml-4 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                >
+                  ✏️ Chỉnh sửa ảnh màu này
                 </button>
               </div>
             )}
@@ -354,180 +399,66 @@ const ProductDetail = () => {
         </div>
 
         {/* Modal thêm mẫu */}
-        <Modal isOpen={isAddModalOpen} onRequestClose={() => setIsAddModalOpen(false)} style={{ content: { maxWidth: '500px', margin: '50px auto', borderRadius: '10px' } }}>
-          <h2 className="text-xl font-bold mb-4">Thêm mẫu mới</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block font-semibold mb-1">Chọn màu:</label>
-              <div className="flex flex-wrap gap-2">
-                {colorOptions
-                  .filter(color => !usedColors.includes(color))
-                  .map(color => (
-                    <button
-                      key={color}
-                      onClick={() => setNewVariant(prev => ({ ...prev, color }))}
-                      className={`px-3 py-1 rounded border ${newVariant.color === color ? 'bg-gray-800 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
-                    >
-                      {color}
-                    </button>
-                  ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block font-semibold mb-1">Chọn size:</label>
-              <div className="flex flex-wrap gap-2">
-                {sizeOptions.map(size => (
-                  <button
-                    key={size}
-                    onClick={() => setNewVariant(prev => ({ ...prev, size }))}
-                    className={`px-3 py-1 rounded border ${newVariant.size === size ? 'bg-gray-800 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <input type="number" placeholder="Giá" className="w-full border rounded p-2" value={newVariant.price} onChange={(e) => setNewVariant({ ...newVariant, price: e.target.value })} />
-            <input type="number" placeholder="Số lượng" className="w-full border rounded p-2" value={newVariant.quantity} onChange={(e) => setNewVariant({ ...newVariant, quantity: e.target.value })} />
-
-            <input type="file" name='files' multiple accept="image/*" className="w-full" onChange={handleImageChange} />
-
-            <div className="flex gap-2 flex-wrap">
-              {newVariant.imageFiles.map((file, i) => (
-                <img key={i} src={URL.createObjectURL(file)} alt="" className="w-16 h-16 object-cover rounded border" />
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end gap-2">
-            <button onClick={() => setIsAddModalOpen(false)} className="px-4 py-2 border rounded hover:bg-gray-100">Hủy</button>
-            <button onClick={handleAddVariant} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Lưu mẫu</button>
-          </div>
-        </Modal>
+        <AddVariantModel
+          isOpen={isAddModalOpen}
+          onRequestClose={() => setIsAddModalOpen(false)}
+          colorOptions={colorOptions}
+          sizeOptions={sizeOptions}
+          usedColors={usedColors}
+          newVariant={newVariant}
+          setNewVariant={setNewVariant}
+          handleImageChange={handleImageChange}
+          handleAddVariant={handleAddVariant}
+        />
 
         {/* Modal xem ảnh */}
         <Modal isOpen={isModalOpen} onRequestClose={closeModal} style={{ overlay: { backgroundColor: 'rgba(0,0,0,0.5)' }, content: { maxWidth: '600px', margin: '50px auto ' } }}>
           <button onClick={closeModal} className="absolute top-2 right-2 text-xl hover:text-red-500"><FaTimes /></button>
           <Slider {...sliderSettings}>
             {selectedImages.map((img, i) => (
-              <div key={i} className="flex justify-center items-center h-[70vh] w-full">
-                <img src={img} alt={`Slide ${i}`} className="max-h-full max-w-full object-contain rounded ml-10" />
+              <div key={i} className="flex justify-center items-center h-[70vh] w-full ">
+                <img src={img} className="max-h-full max-w-full object-contain rounded ml-10" />
               </div>
-            ))}
+            ))
+            }
           </Slider>
         </Modal>
-        <Modal
+        <AddSizeModel
           isOpen={isAddSizeModalOpen}
           onRequestClose={() => setIsAddSizeModalOpen(false)}
-          style={{ content: { maxWidth: '500px', margin: '50px auto' } }}
-        >
-          <h2 className="text-xl font-bold mb-4">
-            Thêm size cho màu: <span className="text-blue-600">{selectedColorForSize}</span>
-          </h2>
+          selectedColor={selectedColorForSize}
+          sizeOptions={sizeOptions}
+          newVariant={newVariant}
+          setNewVariant={setNewVariant}
+          handleAddSize={handleAddSize}
+        />
 
-          <div className="space-y-4">
-            <div>
-              <label className="block font-semibold mb-1">Chọn size:</label>
-              <div className="flex flex-wrap gap-2">
-                {sizeOptions.map(size => (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => setNewVariant(prev => ({ ...prev, size }))}
-                    className={`px-3 py-1 rounded border ${newVariant.size === size ? 'bg-gray-800 text-white' : 'bg-gray-100 hover:bg-gray-200'
-                      }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <input
-              type="number"
-              placeholder="Giá"
-              className="w-full border rounded p-2"
-              value={newVariant.price}
-              onChange={(e) => setNewVariant({ ...newVariant, price: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Số lượng"
-              className="w-full border rounded p-2"
-              value={newVariant.quantity}
-              onChange={(e) => setNewVariant({ ...newVariant, quantity: e.target.value })}
-            />
-          </div>
-
-          <div className="mt-6 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setIsAddSizeModalOpen(false)}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
-            >
-              Hủy
-            </button>
-            <button
-              type="button"
-              onClick={handleAddSize}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Lưu size
-            </button>
-          </div>
-        </Modal>
-
-        <Modal
+        <EditVariantModel
           isOpen={isEditModalOpen}
           onRequestClose={() => setIsEditModalOpen(false)}
-          style={{ content: { maxWidth: '500px', margin: '50px auto' } }}
-        >
-          <h2 className="text-xl font-bold mb-4">Chỉnh sửa mẫu</h2>
+          variant={variantToEdit}
+          setVariant={setVariantToEdit}
+          handleUpdateVariant={handleUpdateVariant}
+        />
 
-          <div className="space-y-4">
-            <p><strong>Màu:</strong> {variantToEdit?.color}</p>
-            <p><strong>Size:</strong> {variantToEdit?.size}</p>
+        <EditColorImagesModel
+          isOpen={isEditColorModalOpen}
+          onRequestClose={() => setIsEditColorModalOpen(false)}
+          initialImages={editColorImages}
+          onSave={async (updatedImages) => {
+            const color = activeColor;
+            const colorVariants = variants.filter(v => v.color === color);
+            for (const v of colorVariants) {
+              await axios.put(`http://localhost:8080/api/productVariant/update-images/${v.id}`, updatedImages, {
+                headers: { 'Content-Type': 'application/json' },
+              });
+            }
 
-            <input
-              type="number"
-              placeholder="Giá"
-              className="w-full border rounded p-2"
-              value={variantToEdit?.price}
-              onChange={(e) =>
-                setVariantToEdit(prev => ({ ...prev, price: e.target.value }))
-              }
-            />
-            <input
-              type="number"
-              placeholder="Số lượng"
-              className="w-full border rounded p-2"
-              value={variantToEdit?.quantity}
-              onChange={(e) =>
-                setVariantToEdit(prev => ({ ...prev, quantity: e.target.value }))
-              }
-            />
-          </div>
-
-          <div className="mt-6 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setIsEditModalOpen(false)}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
-            >
-              Hủy
-            </button>
-            <button
-              type="button"
-              onClick={handleUpdateVariant}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Lưu
-            </button>
-          </div>
-        </Modal>
-
+            const refreshed = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
+            setVariants(refreshed.data || []);
+            setIsEditColorModalOpen(false);
+          }}
+        />
 
 
       </main>

@@ -19,6 +19,8 @@ import BottomPageAdmin from './components/admin/BottomPage';
 import AccessoryPageAdmin from './components/admin/AccessoryPage'
 import ProductDetailAdmin from './components/admin/ProductDetail';
 import AddTopPage from './components/admin/AddTopPage';
+import AddBottomPage from './components/admin/AddBottomPage';
+import AddAccessoryPage from './components/admin/AddAccessoryPage';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -45,6 +47,8 @@ function App() {
            <Route path="/admin/product/accessory" element={<AccessoryPageAdmin />} />
            <Route path="/admin/product/:id" element={<ProductDetailAdmin />} />
            <Route path="/admin/product/top/add" element={<AddTopPage />} />
+           <Route path="/admin/product/bottom/add" element={<AddBottomPage />} />
+           <Route path="/admin/product/accessory/add" element={<AddAccessoryPage />} />
           <Route element={<ProtectedRoute />}>
           </Route>
 

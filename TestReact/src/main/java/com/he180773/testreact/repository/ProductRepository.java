@@ -21,6 +21,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "WHERE p.category = :category AND p.totalQuantity > 0")
     List<Product> findAllByCategoryAndInStock(@Param("category") String category);
 
+
+
     Page<Product> findAllByCategory(String category, Pageable pageable);
 
     List<Product> findAllByOrderByArrivedDateDesc();

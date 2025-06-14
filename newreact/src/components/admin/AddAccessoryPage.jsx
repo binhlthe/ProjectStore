@@ -4,7 +4,7 @@ import axios from "axios";
 import AdminSidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
 
-function AddTopPage() {
+function AddAccessoryPage() {
     const [user, setUser] = useState(() => {
         const cached = localStorage.getItem("user");
         return cached ? JSON.parse(cached) : null;
@@ -13,7 +13,7 @@ function AddTopPage() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
-        category: "top",
+        category: "accessory",
         arrivedDate: "",
         price: "",
         thumbnailImage: null,
@@ -81,7 +81,7 @@ function AddTopPage() {
             });
 
             alert("Thêm sản phẩm thành công!");
-            navigate("/admin/product/top");
+            navigate("/admin/product/bottom");
         } catch (error) {
             console.error("Lỗi khi thêm sản phẩm:", error);
             alert("Có lỗi xảy ra khi thêm sản phẩm.");
@@ -95,7 +95,7 @@ function AddTopPage() {
 
             <div className="flex-1 mt-28 p-6 overflow-y-auto">
                 <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Thêm sản phẩm Top</h2>
+                    <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Thêm sản phẩm Accessory</h2>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-gray-700 font-medium mb-1">Tên sản phẩm</label>
@@ -179,4 +179,4 @@ function AddTopPage() {
     );
 }
 
-export default AddTopPage;
+export default AddAccessoryPage;

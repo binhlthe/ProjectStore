@@ -22,7 +22,7 @@ public class Product {
     @Column(name = "THUMBNAIL_IMAGE")
     private String thumbnailImage;
     @Column(name = "total_quantity")
-    private int totalQuantity;
+    private Integer totalQuantity;
     @Column(name = "price")
     private Integer price;
     @Column(name = "created_at" , nullable = true)
@@ -78,11 +78,11 @@ public class Product {
         this.price = price;
     }
 
-    public int getTotalQuantity() {
+    public Integer getTotalQuantity() {
         return totalQuantity;
     }
 
-    public void setTotalQuantity(int totalQuantity) {
+    public void setTotalQuantity(Integer totalQuantity) {
         this.totalQuantity = totalQuantity;
     }
 

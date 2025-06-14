@@ -225,7 +225,7 @@ public class ProductController {
         return productService.getNewArrivalsSorted(pageable,name, minPrice, maxPrice);
     }
 
-    @PostMapping("/add-top")
+    @PostMapping("/add-product")
     public Product addTop(@RequestBody ProductDTO dto) {
         System.out.println(dto.toString());
         Product product = new Product();
