@@ -12,4 +12,6 @@ public interface WalletTransactionRepository extends JpaRepository<WalletTransac
 
     List<WalletTransaction> findByStatusAndCreatedAtBefore(String status, LocalDateTime createdAt);
 
+    List<WalletTransaction> findByStatus(String status);
+
 }

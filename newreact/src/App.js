@@ -26,6 +26,7 @@ import AdminOrderPage from './components/admin/AdminOrderPage';
 import OrderDetailPage from './components/admin/OrderDetailPage';
 import OrderPage from './components/client/OrderPage';
 import DepositPage from './components/client/DepositPage';
+import OrderSuccessPage from './components/client/OrderSuccessPage';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -59,6 +60,7 @@ function App() {
            <Route path="/admin/order/detail/:id" element={<OrderDetailPage />} />
            <Route path="/my-orders" element={<OrderPage  />} />
            <Route path="/deposit" element={<DepositPage  />} />
+           <Route path="/success-order" element={<OrderSuccessPage  />} />
 
           <Route element={<ProtectedRoute />}>
           </Route>

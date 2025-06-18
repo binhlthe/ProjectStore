@@ -14,8 +14,8 @@ public class Wallet {
     private Long id;
     @Column(name = "user_id")
     private Long userId;
-    @Column(name = "price")
-    private Integer price;
+    @Column(name = "balance")
+    private Integer balance;
     @Column(name = "status")
     private String status;
     @Column(name = "last_updated")
@@ -37,12 +37,12 @@ public class Wallet {
         this.userId = userId;
     }
 
-    public Integer getPrice() {
-        return price;
+    public Integer getBalance() {
+        return balance;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setBalance(Integer balance) {
+        this.balance = balance;
     }
 
     public String getStatus() {

@@ -79,7 +79,7 @@ const Sidebar = ({ user }) => {
           {user?.name || "Guest"}
         </p>
         <p className="text-xs text-red-600">
-  {wallet ? wallet.price.toLocaleString() + " ₫" : "0 ₫"}
+  {wallet ? wallet.balance.toLocaleString() + " ₫" : "0 ₫"}
 </p>
         </div>
       </div>

@@ -1,11 +1,12 @@
 import axios from 'axios';
 import React, { useState, useEffect, useRef } from "react";
 import UserDropdown from "./UserSidebar";
-import { FaUser, FaSearch, FaShoppingCart, FaTrash, FaPlus, FaMinus, FaWallet  } from "react-icons/fa";
+import { FaUser, FaSearch, FaShoppingCart, FaTrash, FaPlus, FaMinus, FaWallet } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useCart } from "./client/CartContext";
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -18,6 +19,9 @@ function Navbar() {
   const dropdownContainerRef = useRef(null);
   const cartRef = useRef(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
 
 
   const navigate = useNavigate();
@@ -73,6 +77,34 @@ function Navbar() {
     }
   };
 
+  const handleSearch = async (query) => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/products/search", {
+        params: { query }
+      });
+      if (res.status === 200) {
+        setSearchResults(res.data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery.trim() !== "") {
+        handleSearch(searchQuery);
+      } else {
+        setSearchResults([]);
+      }
+    }, 100); // đợi 500ms sau khi người dùng dừng gõ
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
+
+
   const handleCheckout = () => {
     const selectedProducts = cartItems.filter(item =>
       selectedItems.includes(item.productVariantId)
@@ -88,14 +120,14 @@ function Navbar() {
       return;
     }
 
-    
-setSelectedProducts(selectedProducts); // lưu vào context
+
+    setSelectedProducts(selectedProducts); // lưu vào context
 
     console.log("Các sản phẩm đã chọn để mua:", selectedProducts);
 
     navigate("/checkout", {
-  state: { selectedProducts }  // truyền selectedProducts sang trang checkout
-});
+      state: { selectedProducts }  // truyền selectedProducts sang trang checkout
+    });
 
     // TODO: Gửi selectedProducts lên backend hoặc chuyển trang thanh toán
   };
@@ -119,19 +151,23 @@ setSelectedProducts(selectedProducts); // lưu vào context
           <input
             type="text"
             placeholder="Tìm kiếm..."
-            className="pl-10 pr-4 py-2 border rounded-full text-sm"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10  pr-40 py-3 mr-10 border rounded-full text-sm"
           />
+
+
           <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
         </div>
 
-<div className="relative">
-         <FaWallet
-    className="text-xl cursor-pointer "
-    title="Nạp tiền vào tài khoản"
-    onClick={() => navigate("/deposit")}
-  />
+        <div className="relative">
+          <FaWallet
+            className="text-xl cursor-pointer "
+            title="Nạp tiền vào tài khoản"
+            onClick={() => navigate("/deposit")}
+          />
         </div>
-         
+
 
         {/* Giỏ hàng */}
         <div className="relative" ref={cartRef}>
@@ -215,6 +251,37 @@ setSelectedProducts(selectedProducts); // lưu vào context
             </div>
           )}
         </div>
+
+        {searchResults.length > 0 && (
+  <div className="absolute top-full left-0 mt-1 w-96 bg-white shadow-lg rounded z-50 max-h-60 overflow-y-auto">
+    {searchResults.map(product => (
+      <Link
+        to={`/product/${product.id}`}
+        key={product.id}
+        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 border-b"
+        onClick={() => {
+          setSearchQuery("");
+          setSearchResults([]);
+        }}
+      >
+        <img
+          src={product.thumbnailImage}
+          alt={product.name}
+          className="w-10 h-10 object-cover rounded"
+        />
+        <div className="flex-1">
+          <div className="font-medium text-sm text-gray-800">{product.name}</div>
+          <div className="text-xs text-red-500">
+            {Number(product.price).toLocaleString()} ₫
+          </div>
+        </div>
+      </Link>
+    ))}
+  </div>
+)}
+
+
+
 
         {/* User */}
         <div className="relative" ref={dropdownContainerRef}>

@@ -7,13 +7,16 @@ import com.he180773.testreact.entity.*;
 import com.he180773.testreact.repository.*;
 import com.he180773.testreact.service.OrderService;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/order")
@@ -27,12 +30,14 @@ public class OrderController {
     private final ProductVariantController productVariantController;
     private final OrderService orderService;
     private final ProductRepository productRepository;
+    private final WalletRepository walletRepository;
 
 
     public OrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
                            CartRepository cartRepository, CartItemRepository cartItemRepository,
                            ProductVariantRepository productVariantRepository, ProductVariantController productVariantController,
-                           OrderService orderService, ProductRepository productRepository) {
+                           OrderService orderService, ProductRepository productRepository,
+                           WalletRepository walletRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.cartRepository = cartRepository;
@@ -41,6 +46,7 @@ public class OrderController {
         this.productVariantController = productVariantController;
         this.orderService = orderService;
         this.productRepository = productRepository;
+        this.walletRepository = walletRepository;
     }
 
     @Transactional
@@ -79,6 +85,9 @@ public class OrderController {
             orderItem.setPrice(orderItemDTO.getPrice());
             orderItemRepository.save(orderItem);
 
+            System.out.println("cartId: "+cart.get().getId());
+            System.out.println("pid: "+ orderItemDTO.getProductVariantId());
+
             cartItemRepository.deleteByCartIdAndProductVariantId(cart.get().getId(), orderItemDTO.getProductVariantId());
         }
 
@@ -116,7 +125,6 @@ public class OrderController {
             }
 
             for(ProductVariant productVariant : variants) {
-                System.out.println("id Variant: "+productVariant.getId());
                 OrderItemDetailDTO orderItemDetailDTO1 = new OrderItemDetailDTO();
                 orderItemDetailDTO1.setColor(productVariant.getColor());
                 orderItemDetailDTO1.setQuantity(productVariant.getQuantity());
@@ -127,7 +135,6 @@ public class OrderController {
                 orderItemDetailDTO1.setProductPrice(product.get().getPrice());
                 orderItemDetailDTO.add(orderItemDetailDTO1);
             }
-            System.out.println("size: "+orderItemDetailDTO.size());
             adminOrderResponseDTO.setItems(orderItemDetailDTO);
             adminDTO.add(adminOrderResponseDTO);
 
@@ -135,6 +142,51 @@ public class OrderController {
 
         return ResponseEntity.ok(adminDTO);
         }
+
+
+    @PostMapping("/check-wallet")
+    public ResponseEntity<?> checkWallet(@RequestBody OrderRequest orderRequest) {
+        Long userId = orderRequest.getUserId();
+        int totalPrice = orderRequest.getTotalPrice();
+
+        Wallet wallet = walletRepository.findByUserId(userId).orElse(null);
+        if (wallet == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("status", "NO_WALLET"));
+        }
+
+        if (wallet.getBalance() < totalPrice) {
+            return ResponseEntity.ok(Map.of("status", "INSUFFICIENT_FUNDS"));
+        }
+
+        wallet.setBalance(wallet.getBalance() - totalPrice);
+        walletRepository.save(wallet);
+
+        return ResponseEntity.ok(Map.of("status", "SUFFICIENT"));
+    }
+
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<?> getOrder(@PathVariable Long userId) {
+        List<Order> orders = orderRepository.findAllByUserIdOrderByOrderDateAsc(userId);
+        int count=0;
+        for(Order order : orders) {
+            if(order.getStatus().equals("CONFIRMED") ) {
+                count++;
+            }
+        }
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/totalSpent/{userId}")
+    public ResponseEntity<?> getTotalSpent(@PathVariable Long userId) {
+        List<Order> orders = orderRepository.findAllByUserIdOrderByOrderDateAsc(userId);
+        int count=0;
+        for(Order order : orders) {
+            if(order.getStatus().equals("CONFIRMED") ) {
+                count+=order.getTotalPrice();
+            }
+        }
+        return ResponseEntity.ok(count);
+    }
 
 
 }

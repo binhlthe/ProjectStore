@@ -3,6 +3,7 @@ package com.he180773.testreact.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "[User]")
@@ -25,6 +26,14 @@ public class User {
     private String name;
     @Column(name = "PHONE", length = 10, nullable = false)
     private String phone;
+    @Column(name = "EMAIL")
+    private String email;
+    @Column(name = "Gender")
+    private boolean gender;
+    @Column(name = "Dob")
+    private Date dob;
+    @Column(name = "Status")
+    private boolean status;
 
     public Long getId() {
         return id;
@@ -88,5 +97,37 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isGender() {
+        return gender;
+    }
+
+    public void setGender(boolean gender) {
+        this.gender = gender;
+    }
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

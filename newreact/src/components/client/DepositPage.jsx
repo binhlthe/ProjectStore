@@ -60,7 +60,7 @@ const DepositPage = ({ }) => {
             await axios.post("http://localhost:8080/api/wallet/handle", {
                 userId,
                 amount: parseInt(amount),
-                transactionCode: transactionCode
+                transactionCode: code
             }, {
                 withCredentials: true // nếu đang dùng cookie auth
             });
@@ -159,7 +159,7 @@ const DepositPage = ({ }) => {
                                         <tr key={item.id} className="text-center">
                                             <td className="px-4 py-2 border text-red-600 font-medium">{item.id}</td>
                                             <td className="px-4 py-2 border">{item.transactionCode}</td>
-                                            <td className="px-4 py-2 border">{item.status === 'PENDING' ? 'Chờ chuyển khoản' : item.status}</td>
+                                            <td className="px-4 py-2 border">{item.status === 'PENDING' ? 'Chờ chuyển khoản' : 'Đã chuyển khoản'}</td>
                                             <td className="px-4 py-2 border">{item.amount.toLocaleString()}đ</td>
                                             <td className="px-4 py-2 border">{new Date(item.createdAt).toLocaleString()}</td>
                                         </tr>

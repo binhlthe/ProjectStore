@@ -232,4 +232,11 @@ public class ProductController {
         product.setCreatedAt(LocalDateTime.now());
         return productRepository.save(product);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String query) {
+        List<Product> products = productRepository.findAllByNameContains(query); // hoặc tên khác
+        return ResponseEntity.ok(products);
+    }
+
 }

@@ -19,6 +19,7 @@ const CheckoutPage = () => {
   const [addressDetail, setAddressDetail] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cod');
 
+
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(() => {
@@ -104,21 +105,25 @@ const CheckoutPage = () => {
         addressDetail,
       },
       paymentMethod,
-      orderDate: new Date().toISOString(), 
+      orderDate: new Date().toISOString(),
       totalPrice: totalAmount
 
     };
 
     console.log(orderData);
 
+    // cod
     if (paymentMethod === 'cod') {
       try {
         const response = await axios.post('http://localhost:8080/api/order/handle', orderData);
 
         if (response.status === 200 || response.status === 201) {
-          alert('Đặt hàng thành công!');
           setSelectedItems([]);
-          navigate('/order-confirmation');
+          const remainingItems = cartItems.filter(
+            item => !selectedItems.includes(item.productVariantId)
+          );
+          setCartItems(remainingItems);
+
         } else {
           alert('Lỗi khi đặt hàng');
         }
@@ -126,9 +131,42 @@ const CheckoutPage = () => {
         console.error('Lỗi đặt hàng:', error);
         alert('Đã xảy ra lỗi khi gửi đơn hàng.');
       }
-    } else if (paymentMethod === 'bank') {
-      navigate('/bank-transfer', { state: { orderData } });
+
     }
+
+    // wallet
+    else if (paymentMethod === 'wallet') {
+      try {
+        // B1: Gửi lên backend để kiểm tra tiền
+        const response = await axios.post('http://localhost:8080/api/order/check-wallet', orderData);
+
+        if (response.data.status === 'INSUFFICIENT_FUNDS') {
+          alert('Ví của bạn không đủ tiền. Vui lòng nạp thêm.');
+          return;
+        }
+
+        // B2: Nếu đủ tiền thì tiếp tục đặt hàng
+        const orderResponse = await axios.post('http://localhost:8080/api/order/handle', orderData);
+
+        if (orderResponse.status === 200 || orderResponse.status === 201) {
+          setSelectedItems([]);
+          const remainingItems = cartItems.filter(
+            item => !selectedItems.includes(item.productVariantId)
+          );
+          setCartItems(remainingItems);
+
+          navigate('/success-order', { state: { orderData } });
+        } else {
+          alert('Lỗi khi đặt hàng');
+        }
+      } catch (error) {
+        console.error('Lỗi thanh toán qua ví:', error);
+        alert('Đã xảy ra lỗi khi kiểm tra ví hoặc đặt hàng.');
+      }
+    }
+    navigate('/success-order', { state: { orderData } });
+
+
   };
 
   return (
@@ -201,8 +239,8 @@ const CheckoutPage = () => {
                   Thanh toán khi nhận hàng
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="radio" name="payment" value="bank" checked={paymentMethod === 'bank'} onChange={() => setPaymentMethod('bank')} />
-                  Chuyển khoản ngân hàng
+                  <input type="radio" name="payment" value="wallet" checked={paymentMethod === 'wallet'} onChange={() => setPaymentMethod('wallet')} />
+                  Thanh toán bằng ví LeventPay
                 </label>
               </div>
             </div>

@@ -22,6 +22,8 @@ public class WalletTransaction {
     private String status;
     @Column(name = "transaction_code")
     private String transactionCode;
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
 
     public Long getId() {
         return id;
@@ -69,5 +71,13 @@ public class WalletTransaction {
 
     public void setTransactionCode(String transactionCode) {
         this.transactionCode = transactionCode;
+    }
+
+    public LocalDateTime getConfirmedAt() {
+        return confirmedAt;
+    }
+
+    public void setConfirmedAt(LocalDateTime confirmedAt) {
+        this.confirmedAt = confirmedAt;
     }
 }
