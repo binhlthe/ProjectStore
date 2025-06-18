@@ -33,7 +33,7 @@ public class ProductVariantController {
 
     @GetMapping("/product/{id}")
     public ResponseEntity<List<ProductVariantDTO>> getTops(HttpServletResponse response, @PathVariable Long id) {
-        System.out.println("id:" +id);
+
         List<ProductVariant> productVariantss= productVariantRepository.findAllByProductId(id);
         List<ProductVariantDTO> variantDTOs = productVariantss.stream().map(variant -> {
             List<String> images = JsonMapper.jsonToList(variant.getImage());
@@ -112,8 +112,6 @@ public class ProductVariantController {
     @PutMapping("/update-images/{id}")
     public ResponseEntity<?> updateImages(@PathVariable Long id, @RequestBody List<String> images) {
         String imageJson = JsonMapper.listToJson(images);
-        System.out.println("Images:  "+ images);
-        System.out.println("ideee: "+id);
         List<ProductVariant> variants = productVariantRepository.findAllById(id);
         for(ProductVariant variant : variants) {
             variant.setImage(imageJson);

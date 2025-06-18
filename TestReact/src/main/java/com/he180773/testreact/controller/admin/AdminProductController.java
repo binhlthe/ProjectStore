@@ -72,5 +72,37 @@ public class AdminProductController {
         return ResponseEntity.status(401).body(null);
     }
 
+    @GetMapping("/getAllTops")
+    public ResponseEntity<List<Product>> getAllTops( HttpServletResponse response) {
+
+
+        List<Product> products= productRepository.findAllByCategory("top");
+        if(products.size()>0) {
+            return ResponseEntity.ok(products);
+        }
+        return ResponseEntity.status(401).body(null);
+    }
+
+    @GetMapping("/getAllBottoms")
+    public ResponseEntity<List<Product>> getAllBottoms( HttpServletResponse response) {
+
+
+        List<Product> products= productRepository.findAllByCategory("bottom");
+        if(products.size()>0) {
+            return ResponseEntity.ok(products);
+        }
+        return ResponseEntity.status(401).body(null);
+    }
+
+    @GetMapping("/getAllAccessories")
+    public ResponseEntity<List<Product>> getAllAccessories( HttpServletResponse response) {
+
+
+        List<Product> products= productRepository.findAllByCategory("accessory");
+        if(products.size()>0) {
+            return ResponseEntity.ok(products);
+        }
+        return ResponseEntity.status(401).body(null);
+    }
 
 }

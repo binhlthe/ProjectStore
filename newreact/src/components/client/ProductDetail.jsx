@@ -10,7 +10,8 @@ function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]); // <-- giữ biến thể riêng
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  console.log(user);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [currentImage, setCurrentImage] = useState(null);
@@ -128,17 +129,9 @@ function ProductDetail() {
 
     };
 
-    const fetchProfile = async () => {
-      try {
-        const res = await axios.post('http://localhost:8080/api/user/profile', {}, { withCredentials: true });
-        setUser(res.data);
-      } catch (err) {
-        console.error("Lỗi khi lấy thông tin người dùng:", err);
-      }
-    };
+    
 
     fetchData();
-    fetchProfile();
   }, [id]);
 
   useEffect(() => {
@@ -161,16 +154,12 @@ function ProductDetail() {
     }
 
     const itemToCart = {
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      thumbnailImage: product.thumbnailImage,
-      variantId: selectedVariant.id,
-      color: selectedColor,
-      size: selectedSize,
-      quantity: 1,
-      image: selectedVariant.image,
+      userId: user.id,
+      productVariantId: selectedVariant.id,
+      quantity: 1
     };
+
+    console.log(itemToCart);
 
     addToCart(itemToCart);
   };

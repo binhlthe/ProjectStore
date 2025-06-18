@@ -35,11 +35,7 @@ public class ProductController {
     @GetMapping("/tops")
     public ResponseEntity<List<Product>> getTop( HttpServletResponse response) {
         List<Product> products= productService.findAllByCategory("top");
-        System.out.println("products: "+products
-        );
-        for(Product product:products){
-            System.out.println(product.getName());
-        }
+
         if(products.size()>0) {
             return ResponseEntity.ok(products);
         }
@@ -227,7 +223,6 @@ public class ProductController {
 
     @PostMapping("/add-product")
     public Product addTop(@RequestBody ProductDTO dto) {
-        System.out.println(dto.toString());
         Product product = new Product();
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());

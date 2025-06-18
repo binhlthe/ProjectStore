@@ -61,7 +61,6 @@ public class AuthController {
 
             response.setHeader("Set-Cookie",
                     "token=" + token + "; Path=/; HttpOnly; Max-Age=86400; SameSite=Lax");
-            System.out.println(user.getId());
 
             UserDTO userDTO = new UserDTO();
             userDTO.setId(user.getId());
@@ -99,7 +98,6 @@ public class AuthController {
             String password = request.getPassword();
             String confirmPassword = request.getConfirmPassword();
             if (username == null || password == null || confirmPassword == null) {
-                System.out.println(request.getUsername()+" "+request.getPassword());
                 return ResponseEntity.status(401).body("Vui lòng điền hết các thông tin quan trọng!");
 
             }
@@ -131,7 +129,6 @@ public class AuthController {
                 .path("/")
                 .maxAge(0)  // Xóa token
                 .build();
-        System.out.println("Coooooaaaa: "+jwtCookie.getValue());
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
 
         return ResponseEntity.ok("Logged out successfully!");

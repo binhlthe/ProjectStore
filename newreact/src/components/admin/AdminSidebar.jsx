@@ -7,9 +7,9 @@ import { FaHome, FaChartLine , FaBoxOpen, FaClipboardList, FaUserAlt } from "rea
 
 const menu = [
   { label: "Dashboard", icon: <FaHome />, path: "/admin" },
-  { label: "Doanh Thu", icon: <FaChartLine />, path: "/revenue" },
+  { label: "Doanh Thu", icon: <FaChartLine />, path: "/admin/revenue" },
   { label: "Quản lí sản phẩm", icon: <FaBoxOpen />, path: "/admin/product" },
-  { label: "Đơn hàng", icon: <FaClipboardList />, path: "/order" },
+  { label: "Đơn hàng", icon: <FaClipboardList />, path: "/admin/order" },
 ];
 
 

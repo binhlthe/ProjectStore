@@ -21,6 +21,11 @@ import ProductDetailAdmin from './components/admin/ProductDetail';
 import AddTopPage from './components/admin/AddTopPage';
 import AddBottomPage from './components/admin/AddBottomPage';
 import AddAccessoryPage from './components/admin/AddAccessoryPage';
+import CheckoutPage from './components/client/CheckoutPage';
+import AdminOrderPage from './components/admin/AdminOrderPage';
+import OrderDetailPage from './components/admin/OrderDetailPage';
+import OrderPage from './components/client/OrderPage';
+import DepositPage from './components/client/DepositPage';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -49,6 +54,12 @@ function App() {
            <Route path="/admin/product/top/add" element={<AddTopPage />} />
            <Route path="/admin/product/bottom/add" element={<AddBottomPage />} />
            <Route path="/admin/product/accessory/add" element={<AddAccessoryPage />} />
+           <Route path="/checkout" element={<CheckoutPage />} />
+           <Route path="/admin/order" element={<AdminOrderPage />} />
+           <Route path="/admin/order/detail/:id" element={<OrderDetailPage />} />
+           <Route path="/my-orders" element={<OrderPage  />} />
+           <Route path="/deposit" element={<DepositPage  />} />
+
           <Route element={<ProtectedRoute />}>
           </Route>
 

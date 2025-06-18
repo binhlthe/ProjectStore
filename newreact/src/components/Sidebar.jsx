@@ -1,6 +1,8 @@
 // src/components/Sidebar.js
 // import thêm Link
 import { Link, useLocation } from "react-router-dom";
+import  { useEffect, useState } from "react";
+import axios from "axios";
 
 import React from "react";
 import { FaHome, FaStar, FaTshirt, FaSocks, FaUserAlt } from "react-icons/fa";
@@ -16,8 +18,31 @@ const menu = [
 
 
 
+
+
 const Sidebar = ({ user }) => {
   const location = useLocation(); // để highlight menu đang active
+  const [wallet, setWallet] = useState(null);
+
+  useEffect(() => {
+    console.log("hihih");
+    const fetchWallet = async () => {
+      try {
+        if (!user || !user.id) return;
+        const res = await axios.get(`http://localhost:8080/api/wallet/get`,{
+          params: {
+            userId: user.id
+          }
+        });
+        console.log('aaaa'+res.data);
+        setWallet(res.data);
+      } catch (err) {
+        console.error("Lỗi lấy ví:", err);
+      }
+    };
+
+    fetchWallet();
+  }, [user]);
 
   return (
     <aside className="w-64 bg-white shadow-lg flex flex-col justify-between">
@@ -49,9 +74,14 @@ const Sidebar = ({ user }) => {
           alt="Avatar"
           className="w-10 h-10 rounded-full object-cover"
         />
-        <p className="text-sm font-medium text-gray-800">
+        <div>
+          <p className="text-sm font-medium text-gray-800">
           {user?.name || "Guest"}
         </p>
+        <p className="text-xs text-red-600">
+  {wallet ? wallet.price.toLocaleString() + " ₫" : "0 ₫"}
+</p>
+        </div>
       </div>
     </aside>
   );
