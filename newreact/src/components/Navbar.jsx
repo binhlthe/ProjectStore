@@ -133,8 +133,8 @@ function Navbar() {
   };
 
   return (
-    <header className="bg-white shadow-md flex items-center justify-between px-6 w-full fixed top-0 py-3 z-30">
-      <div className="flex items-center gap-4">
+    <header className="bg-white shadow-md flex items-center justify-between px-6 w-full fixed top-0 h-[66px] z-30">
+      <div className="flex items-center gap-2">
         <div className="text-2xl font-bold text-blue-600">
           <Link to={user && user.role === "ADMIN" ? "/admin" : "/home"}>
             <img
@@ -146,139 +146,148 @@ function Navbar() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 relative">
-        <div className="relative">
+      <div className="flex items-center gap-2 relative">
+        {((user?.role === "USER") || (!user)) && (
+        <div className="relative ">
           <input
             type="text"
             placeholder="Tìm kiếm..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10  pr-40 py-3 mr-10 border rounded-full text-sm"
+            className="pl-10  pr-[300px]  py-3 mr-10 border-2 rounded-full  self-center text-sm"
           />
 
 
-          <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+          <FaSearch className="absolute left-3 top-3 text-gray-400" />
         </div>
+        )}
+        {searchResults.length > 0 && (
+          <div className="absolute top-full left-0 mt-1 w-[90%] bg-white shadow-lg rounded z-50 max-h-60 overflow-y-auto">
+            {searchResults.map(product => (
+              <Link
+                to={`/product/${product.id}`}
+                key={product.id}
+                className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 border-b"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchResults([]);
+                }}
+              >
+                <img
+                  src={product.thumbnailImage}
+                  alt={product.name}
+                  className="w-10 h-10 object-cover rounded"
+                />
+                <div className="flex-1">
+                  <div className="font-medium text-sm text-gray-800">{product.name}</div>
+                  <div className="text-xs text-red-500">
+                    {Number(product.price).toLocaleString()} ₫
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
-        <div className="relative">
-          <FaWallet
-            className="text-xl cursor-pointer "
-            title="Nạp tiền vào tài khoản"
-            onClick={() => navigate("/deposit")}
-          />
-        </div>
+      </div>
 
+
+
+      <div className="flex items-center gap-2 relative">
+        {user?.role === "USER" && (
+          <div className="relative">
+            <FaWallet
+              className="text-xl cursor-pointer"
+              title="Nạp tiền vào tài khoản"
+              onClick={() => navigate("/deposit")}
+            />
+          </div>
+        )}
 
         {/* Giỏ hàng */}
-        <div className="relative" ref={cartRef}>
-          <FaShoppingCart
-            className="text-xl cursor-pointer"
-            onClick={() => setShowCart(!showCart)}
-          />
-          {showCart && (
-            <div className="absolute right-0 mt-4 w-96 bg-white shadow-lg rounded-md z-50 p-4 max-h-[400px] overflow-y-auto">
-              <h3 className="font-bold mb-2 flex justify-between items-center">
-                Giỏ hàng
-                {cartItems.length > 0 && (
-                  <button onClick={toggleSelectAll} className="text-blue-600 text-sm">
-                    {selectedItems.length === cartItems.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
-                  </button>
-                )}
-              </h3>
-
-              {cartItems.length === 0 ? (
-                <p className="text-gray-500">Chưa có sản phẩm</p>
-              ) : (
-                <>
-                  <ul className="space-y-2">
-                    {cartItems.map((item, index) => (
-                      <li key={index} className="flex items-center gap-3 border-b pb-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item.productVariantId)}
-                          onChange={() => toggleSelectItem(item.productVariantId)}
-                        />
-                        <img src={item.imageUrl} alt={item.name} className="w-14 h-14 object-cover rounded" />
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-800">{item.productName}</div>
-                          <div className="text-sm text-gray-500">
-                            Màu: <span className="font-medium">{item.color}</span> — Size: <span className="font-medium">{item.size}</span>
-                          </div>
-                          <div className="text-sm text-red-500">
-                            {Number(item.price).toLocaleString()} ₫
-                          </div>
-                          <div className="flex items-center mt-1 gap-2 text-sm">
-                            <button onClick={() => decreaseQuantity(item.productVariantId)} className="p-1 bg-gray-200 rounded">
-                              <FaMinus size={10} />
-                            </button>
-                            <span>{item.quantity}</span>
-                            <button onClick={() => increaseQuantity(item.productVariantId)} className="p-1 bg-gray-200 rounded">
-                              <FaPlus size={10} />
-                            </button>
-                          </div>
-                        </div>
-                        <button
-                          className="text-red-600 hover:text-red-800"
-                          onClick={() => removeFromCart(item.productVariantId)}
-                          title="Xóa sản phẩm"
-                        >
-                          <FaTrash />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Tổng và nút mua */}
-                  <div className="mt-4 pt-3 border-t text-sm">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-semibold">Tổng:</span>
-                      <span className="font-semibold text-red-500">
-                        {cartItems
-                          .filter(item => selectedItems.includes(item.productVariantId))
-                          .reduce((sum, item) => sum + item.price * item.quantity, 0)
-                          .toLocaleString("vi-VN")} ₫
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleCheckout}
-                      className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-                    >
-                      Mua hàng
+        {user?.role === "USER" && (
+          <div className="relative" ref={cartRef}>
+            <FaShoppingCart
+              className="text-xl cursor-pointer"
+              onClick={() => setShowCart(!showCart)}
+            />
+            {showCart && (
+              <div className="absolute right-0 mt-4 w-96 bg-white shadow-lg rounded-md z-50 p-4 max-h-[400px] overflow-y-auto">
+                <h3 className="font-bold mb-2 flex justify-between items-center">
+                  Giỏ hàng
+                  {cartItems.length > 0 && (
+                    <button onClick={toggleSelectAll} className="text-blue-600 text-sm">
+                      {selectedItems.length === cartItems.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
                     </button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                  )}
+                </h3>
 
-        {searchResults.length > 0 && (
-  <div className="absolute top-full left-0 mt-1 w-96 bg-white shadow-lg rounded z-50 max-h-60 overflow-y-auto">
-    {searchResults.map(product => (
-      <Link
-        to={`/product/${product.id}`}
-        key={product.id}
-        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 border-b"
-        onClick={() => {
-          setSearchQuery("");
-          setSearchResults([]);
-        }}
-      >
-        <img
-          src={product.thumbnailImage}
-          alt={product.name}
-          className="w-10 h-10 object-cover rounded"
-        />
-        <div className="flex-1">
-          <div className="font-medium text-sm text-gray-800">{product.name}</div>
-          <div className="text-xs text-red-500">
-            {Number(product.price).toLocaleString()} ₫
+                {cartItems.length === 0 ? (
+                  <p className="text-gray-500">Chưa có sản phẩm</p>
+                ) : (
+                  <>
+                    <ul className="space-y-2">
+                      {cartItems.map((item, index) => (
+                        <li key={index} className="flex items-center gap-3 border-b pb-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.includes(item.productVariantId)}
+                            onChange={() => toggleSelectItem(item.productVariantId)}
+                          />
+                          <img src={item.imageUrl} alt={item.name} className="w-14 h-14 object-cover rounded" />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-gray-800">{item.productName}</div>
+                            <div className="text-sm text-gray-500">
+                              Màu: <span className="font-medium">{item.color}</span> — Size: <span className="font-medium">{item.size}</span>
+                            </div>
+                            <div className="text-sm text-red-500">
+                              {Number(item.price).toLocaleString()} ₫
+                            </div>
+                            <div className="flex items-center mt-1 gap-2 text-sm">
+                              <button onClick={() => decreaseQuantity(item.productVariantId)} className="p-1 bg-gray-200 rounded">
+                                <FaMinus size={10} />
+                              </button>
+                              <span>{item.quantity}</span>
+                              <button onClick={() => increaseQuantity(item.productVariantId)} className="p-1 bg-gray-200 rounded">
+                                <FaPlus size={10} />
+                              </button>
+                            </div>
+                          </div>
+                          <button
+                            className="text-red-600 hover:text-red-800"
+                            onClick={() => removeFromCart(item.productVariantId)}
+                            title="Xóa sản phẩm"
+                          >
+                            <FaTrash />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Tổng và nút mua */}
+                    <div className="mt-4 pt-3 border-t text-sm">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold">Tổng:</span>
+                        <span className="font-semibold text-red-500">
+                          {cartItems
+                            .filter(item => selectedItems.includes(item.productVariantId))
+                            .reduce((sum, item) => sum + item.price * item.quantity, 0)
+                            .toLocaleString("vi-VN")} ₫
+                        </span>
+                      </div>
+                      <button
+                        onClick={handleCheckout}
+                        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                      >
+                        Mua hàng
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-        </div>
-      </Link>
-    ))}
-  </div>
-)}
+        )}
 
 
 

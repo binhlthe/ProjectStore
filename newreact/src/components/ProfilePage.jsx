@@ -11,7 +11,7 @@ function ProfilePage() {
     return cached ? JSON.parse(cached) : null;
   });
 
-  const userId = user.id;
+  const userId = user?.id;
 
   const [stats, setStats] = useState('');
   const [orders, setOrders] = useState('');
@@ -26,7 +26,6 @@ function ProfilePage() {
         try {
           const res = await axios.get(`http://localhost:8080/api/user/get/${userId}`);
           setStats(res.data);
-          console.log(res.data);
 
         } catch (err) {
           console.error("Failed to fetch stats", err);
@@ -114,7 +113,6 @@ function ProfilePage() {
     );
   }
 
-  console.log(user);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -167,7 +165,7 @@ function ProfilePage() {
                 </div>
                 <div className="flex items-center gap-2 text-gray-700">
                   <FaCalendarAlt />
-                  <span>{stats.dob ? new Date(stats.dob).toLocaleDateString('vi-VN') : "Chưa cập nhật"}</span>
+                  <span>{user.dob ? new Date(user.dob).toLocaleDateString('vi-VN') : "Chưa cập nhật"}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-gray-600">
@@ -182,9 +180,9 @@ function ProfilePage() {
                     <FaGenderless className="text-gray-500" />
                   )}
                   <span>
-                    {stats.gender === true
+                    {user.gender === true
                       ? "Nam"
-                      : stats.gender === false
+                      : user.gender === false
                         ? "Nữ"
                         : "Chưa cập nhật"}
                   </span>
@@ -223,7 +221,7 @@ function ProfilePage() {
 
             {/* Thông tin bổ sung */}
             <div className="border-t pt-6 text-gray-600 text-sm space-y-2">
-              <p><strong>Ngày tham gia:</strong> {stats.createdAt ? new Date(stats.createdAt).toLocaleDateString() : "Không rõ"}</p>
+              <p><strong>Ngày tham gia:</strong> {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Không rõ"}</p>
               <p><strong>Vai trò:</strong> {user.role || "Khách hàng"}</p>
               <p><strong>Trạng thái:</strong> {user.status ? "Hoạt động" : "Đang bị khóa"}</p>
             </div>

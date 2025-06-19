@@ -29,9 +29,8 @@ const UserDropdown = ({ user, isOpen, onClose }) => {
 
         onClose(); // Đóng dropdown
 
-        if (user && user.role === "ADMIN") {
           navigate("/home");
-        }
+        
 
         window.location.reload(); // Làm mới trang để reset lại UI
       } else {

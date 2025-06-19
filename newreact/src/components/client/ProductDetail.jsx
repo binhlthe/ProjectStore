@@ -5,6 +5,7 @@ import Sidebar from '../Sidebar';
 import { useCart } from "./CartContext";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
+import Swal from 'sweetalert2';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -24,10 +25,10 @@ function ProductDetail() {
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   console.log(variants);
-  
+
   const allColors = [...new Set(variants.map(v => v.color))].sort(
-  (a, b) => colorOptions.indexOf(a) - colorOptions.indexOf(b)
-);
+    (a, b) => colorOptions.indexOf(a) - colorOptions.indexOf(b)
+  );
   const allSizes = [...new Set(variants.map(v => v.size))].sort((a, b) => {
     const order = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
     return order.indexOf(a) - order.indexOf(b);
@@ -129,7 +130,7 @@ function ProductDetail() {
 
     };
 
-    
+
 
     fetchData();
   }, [id]);
@@ -144,6 +145,15 @@ function ProductDetail() {
   }, [selectedColor]);
 
   const handleAddToCart = () => {
+    if (!user || user.role !== 'USER') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Bạn phải đăng nhập!',
+        text: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
     const selectedVariant = variants.find(
       v => v.color === selectedColor && v.size === selectedSize
     );

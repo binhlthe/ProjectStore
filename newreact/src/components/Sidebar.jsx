@@ -5,15 +5,18 @@ import  { useEffect, useState } from "react";
 import axios from "axios";
 
 import React from "react";
-import { FaHome, FaStar, FaTshirt, FaSocks, FaUserAlt } from "react-icons/fa";
+import { FaHome, FaStar, FaTshirt, FaSocks, FaUserAlt,FaShoppingBag  } from "react-icons/fa";
+import { GiArmoredPants  } from 'react-icons/gi';
+import { MdNewReleases } from "react-icons/md";
+
 
 const menu = [
   { label: "Trang chủ", icon: <FaHome />, path: "/home" },
   { label: "Top Seller", icon: <FaStar />, path: "/homeeee" },
-  { label: "New Arrival", icon: <FaTshirt />, path: "/product/new-arrival" },
+  { label: "New Arrival", icon: <MdNewReleases  />, path: "/product/new-arrival" },
   { label: "Top", icon: <FaTshirt />, path: "/product/top" },
-  { label: "Bottom", icon: <FaSocks />, path: "/product/bottom" },
-  { label: "Accessories", icon: <FaUserAlt />, path: "/product/accessory" },
+  { label: "Bottom", icon: <GiArmoredPants  />, path: "/product/bottom" },
+  { label: "Accessory", icon: <FaShoppingBag  />, path: "/product/accessory" },
 ];
 
 
@@ -48,9 +51,9 @@ const Sidebar = ({ user }) => {
     <aside className="w-64 bg-white shadow-lg flex flex-col justify-between">
       <div>
         <div className="p-6 text-2xl font-bold text-blue-600 border-b border-gray-200">
-          MyShop Admin
+          
         </div>
-        <nav className="mt-4">
+        <nav className="mt-10">
           {menu.map((item, idex) => (
             <Link to={item.path} key={idex}>
               <div

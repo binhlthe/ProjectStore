@@ -5,15 +5,9 @@ import com.he180773.testreact.dto.AdminOrderResponseDTO;
 import com.he180773.testreact.dto.OrderItemDTO;
 import com.he180773.testreact.dto.OrderItemDetailDTO;
 import com.he180773.testreact.dto.OrderRequest;
-import com.he180773.testreact.entity.Order;
-import com.he180773.testreact.entity.OrderItem;
-import com.he180773.testreact.entity.Product;
-import com.he180773.testreact.entity.ProductVariant;
+import com.he180773.testreact.entity.*;
 import com.he180773.testreact.mapper.JsonMapper;
-import com.he180773.testreact.repository.OrderItemRepository;
-import com.he180773.testreact.repository.OrderRepository;
-import com.he180773.testreact.repository.ProductRepository;
-import com.he180773.testreact.repository.ProductVariantRepository;
+import com.he180773.testreact.repository.*;
 import com.he180773.testreact.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,16 +28,19 @@ public class AdminOrderController {
     private final ProductRepository productRepository;
     private final OrderService orderService;
     private final ProductVariantController productVariantController;
+    private final WalletRepository walletRepository;
 
     public AdminOrderController(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
                                 ProductVariantRepository productVariantRepository, ProductRepository productRepository,
-                                OrderService orderService, ProductVariantController productVariantController) {
+                                OrderService orderService, ProductVariantController productVariantController,
+                                WalletRepository walletRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.productVariantRepository = productVariantRepository;
         this.productRepository = productRepository;
         this.orderService = orderService;
         this.productVariantController = productVariantController;
+        this.walletRepository = walletRepository;
     }
 
     @GetMapping("/get")
@@ -146,6 +143,10 @@ public class AdminOrderController {
     @PutMapping("/{orderId}/cancel")
     public ResponseEntity<?> cancelOrder(@PathVariable Long orderId) {
         orderService.updateStatus(orderId, "CANCELLED");
+        Order order = orderRepository.findById(orderId).orElse(null);
+        Wallet wallet = walletRepository.findByUserId(order.getUserId()).orElse(null);
+        wallet.setBalance(wallet.getBalance()+order.getTotalPrice());
+        walletRepository.save(wallet);
         return ResponseEntity.ok().build();
     }
 

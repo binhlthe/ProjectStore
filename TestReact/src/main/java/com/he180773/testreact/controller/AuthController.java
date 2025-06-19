@@ -69,6 +69,11 @@ public class AuthController {
             userDTO.setName(user.getName());
             userDTO.setPhone(user.getPhone());
             userDTO.setRole(user.getRole());
+            userDTO.setDob(user.getDob());
+            userDTO.setGender(user.isGender());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setStatus(user.isStatus());
+            userDTO.setCreatedAt(user.getCreatedAt());
             return ResponseEntity.ok(userDTO);
         }
         catch (BadCredentialsException e) {

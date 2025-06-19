@@ -24,6 +24,7 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable Long userId) {
         User user = userRepository.findById(userId).orElse(null);
         System.out.println("user: " + user.isStatus());
+        System.out.println("email: " + user.getEmail());
         return ResponseEntity.ok(user);
     }
 

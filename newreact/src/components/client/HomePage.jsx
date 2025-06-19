@@ -38,8 +38,8 @@ function HomePage() {
         const res3 = await axios.get('http://localhost:8080/api/products/accessories');
         const res4 = await axios.get('http://localhost:8080/api/products/new-arrivals');
         console.log(res1.data);
-        
-        
+
+
 
         setTops(res1.data); // Lưu vào state đã có price
         console.log(tops);
@@ -88,7 +88,7 @@ function HomePage() {
     document.title = "Levents";
   }, []);
 
-  const ProductDetail = ({ product }) => {
+  const ProductDetail = ({ product ,isNew }) => {
     const navigate = useNavigate(); // Hook điều hướng
 
     const handleClick = () => {
@@ -105,6 +105,13 @@ function HomePage() {
           alt={product.name}
           className="w-full h-auto object-contain aspect-[3/4] rounded-md mb-2"
         />
+
+        {/* Tag NEW nếu là sản phẩm mới */}
+        {isNew && (
+          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow-md uppercase z-10">
+            NEW
+          </div>
+        )}
 
         <h3 className="text-lg font-semibold line-clamp-2 min-h-[3.5rem]">
           {product.name}
@@ -159,9 +166,10 @@ function HomePage() {
           >
             {newArrivals.map((product, index) => (
               <SwiperSlide key={index}>
-                <ProductDetail product={product} />
+                <ProductDetail product={product} isNew={true} />
               </SwiperSlide>
             ))}
+
           </Swiper>
         </section>
 

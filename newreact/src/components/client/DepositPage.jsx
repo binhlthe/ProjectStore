@@ -126,7 +126,7 @@ const DepositPage = ({ }) => {
                         </div>
 
                         <p className="mb-2">Quét mã QR bằng ứng dụng ngân hàng để chuyển khoản:</p>
-                        <img key={timestamp}  src={qrLink} alt="QR Code" className="mx-auto w-64 h-64 border" />
+                        <img key={timestamp} src={qrLink} alt="QR Code" className="mx-auto w-64 h-64 border" />
 
                         <p className="text-sm text-gray-500 mt-4">
                             Sau khi chuyển khoản, hệ thống sẽ tự động ghi nhận nếu bạn nhập đúng nội dung.
@@ -173,8 +173,9 @@ const DepositPage = ({ }) => {
                         </table>
                     </div>
                 </div>
-
+                <Footer />
             </main>
+
         </div>
     );
 };
