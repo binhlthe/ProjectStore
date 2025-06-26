@@ -35,20 +35,26 @@ public class ChatController {
         entity.setContent(message.getContent());
         entity.setChatRoomId(message.getChatRoomId());
         entity.setSentAt(LocalDateTime.now());
-        messageRepository.save(entity);
+        Message saved= messageRepository.save(entity);
 
         message.setSentAt(LocalDateTime.now());
+        System.out.println("Status: " + saved.getStatus());
+
 
         // Gửi về tất cả admin đang theo dõi (nếu có)
         messagingTemplate.convertAndSend("/topic/admin-messages", message);
+
+
 // Gửi về cho người gửi (nếu cần echo lại)
         System.out.println("sent message"+ String.valueOf(message.getReceiverId()));
         messagingTemplate.convertAndSendToUser(
                 String.valueOf(message.getReceiverId()),
                 "/queue/messages",
-                message
+                saved
         );
     }
+
+
 
 
 

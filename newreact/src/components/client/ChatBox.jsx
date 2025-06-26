@@ -3,6 +3,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import axios from "axios";
 import { FaComments, FaTimes } from "react-icons/fa";
+import { type } from "@testing-library/user-event/dist/type";
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]);
@@ -146,30 +147,12 @@ const ChatBox = () => {
     });
   };
 
-  useEffect(() => {
-    if (chatVisible && messages.length > 0) {
-      const lastMsg = messages[messages.length - 1];
+  
 
-      if (
-        lastMsg.senderId !== user.id &&  // Tin nhắn của admin
-        lastMsg.status !== "READ"        // Chưa được đánh dấu là đã đọc
-      ) {
-        axios.post("http://localhost:8080/api/chat/markAsRead", {
-          messageId: lastMsg.id,
-          readerId: user.id,
-        }).then(() => {
-          // Cập nhật lại message trong local state
-          setMessages((prevMessages) =>
-            prevMessages.map((msg) =>
-              msg.id === lastMsg.id
-                ? { ...msg, status: "READ", readerId: user.id }
-                : msg
-            )
-          );
-        });
-      }
-    }
-  }, [chatVisible, messages]);
+  const lastReadMessageId = [...messages]
+    .reverse()
+    .find((m) => m.senderId == user.id && m.status === "READ")?.id;
+    
 
 
 
@@ -220,13 +203,24 @@ const ChatBox = () => {
               >
                 {messages.map((msg, idx) => {
                   const isCurrentUser = msg.senderId == user.id;
-                  console.log(isCurrentUser);
+                  console.log(idx === messages.length-1);
+                  
                   const isLastInGroup =
                     idx === messages.length - 1 ||
-                    messages[idx + 1].senderId !== msg.senderId;
+                   String(messages[idx + 1].senderId) !== String(msg.senderId);
+
+                  const isLastReadMessage = msg.id && (msg.id === lastReadMessageId);
+
 
                   return (
-                    <div key={idx} className={`flex ${isCurrentUser ? "justify-end" : "justify-start"} items-end`}>
+                    <div
+                      key={idx}
+                      className={`flex ${isCurrentUser ? "justify-end" : "justify-start"} items-end  `}
+                      style={{
+                        marginBottom: isLastReadMessage ? "24px" : undefined, // 👈 Cách ra 24px nếu là tin cuối đã đọc
+                      }}
+                    >
+                      {/* Nếu là tin nhắn admin gửi (bên trái) */}
                       {!isCurrentUser && (
                         <div className="w-8 mr-1 flex-shrink-0">
                           {isLastInGroup ? (
@@ -236,12 +230,12 @@ const ChatBox = () => {
                               className="w-6 h-6 rounded-full object-cover mb-5"
                             />
                           ) : (
-                            <div className="w-6 h-6" /> // giữ chỗ để canh hàng
+                            <div className="w-6 h-6" /> // giữ chỗ
                           )}
                         </div>
                       )}
 
-                      <div className="flex flex-col max-w-[70%]">
+                      <div className="flex flex-col max-w-[70%] relative">
                         <div
                           className={`px-3 py-2 rounded-lg break-words ${isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-300 text-black"
                             }`}
@@ -249,6 +243,8 @@ const ChatBox = () => {
                         >
                           {msg.content}
                         </div>
+
+                        {/* Thời gian gửi */}
                         {isLastInGroup && (
                           <div
                             className={`text-xs text-gray-500 mt-1 ${isCurrentUser ? "text-right self-end" : "text-left"
@@ -257,11 +253,18 @@ const ChatBox = () => {
                             {formatTime(msg.sentAt || msg.timestamp)}
                           </div>
                         )}
+
+                        {/* ✅ Avatar admin chỉ hiển thị nếu là tin nhắn cuối cùng đã đọc */}
+                        {isCurrentUser && isLastReadMessage && (
+                          <img
+                            src="/images/logo-admin.png"
+                            alt="Đã đọc"
+                            title="Đã đọc"
+                            className="w-4 h-4 rounded-full absolute -bottom-5 right-0 border border-white "
+                          />
+                        )}
                       </div>
-
-
                     </div>
-
                   );
                 })}
 

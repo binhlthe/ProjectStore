@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class AdminChatController {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private SimpMessagingTemplate messagingTemplate;
 
     public AdminChatController(MessageRepository messageRepository, UserRepository userRepository) {
         this.messageRepository = messageRepository;
@@ -114,18 +116,24 @@ public class AdminChatController {
         return messageRepository.findBySenderIdOrReceiverId(userId, userId,pageable).getContent();
     }
 
-    @PostMapping("/api/chat/markAsRead")
+    @PostMapping("/markAsRead")
     public ResponseEntity<Void> markAsRead(@RequestBody Map<String, Object> payload) {
+        System.out.println("payload: "+payload);
+        System.out.println("MessageId: "+payload.get("messageId"));
+        System.out.println("UserId: "+payload.get("userId"));
         Long messageId = Long.parseLong(payload.get("messageId").toString());
-        String readerId = payload.get("readerId").toString();
+        String currentUserId = payload.get("userId").toString();
 
         Optional<Message> optionalMessage = messageRepository.findById(messageId);
         if (optionalMessage.isEmpty()) return ResponseEntity.notFound().build();
 
         Message message = optionalMessage.get();
-        message.setStatus("READ");
-        message.setReaderId(readerId);
-        messageRepository.save(message);
+
+        // Chỉ update nếu currentUser là người nhận và chưa đọc
+        if (message.getReceiverId().equals(currentUserId) && !"READ".equals(message.getStatus())) {
+            message.setStatus("READ");
+            messageRepository.save(message);
+        }
 
         return ResponseEntity.ok().build();
     }
