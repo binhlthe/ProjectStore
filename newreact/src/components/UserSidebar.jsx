@@ -29,8 +29,8 @@ const UserDropdown = ({ user, isOpen, onClose }) => {
 
         onClose(); // Đóng dropdown
 
-          navigate("/home");
-        
+        navigate("/home");
+
 
         window.location.reload(); // Làm mới trang để reset lại UI
       } else {
@@ -64,24 +64,27 @@ const UserDropdown = ({ user, isOpen, onClose }) => {
       >
         {user?.username ? (
           <>
-            <button
-              className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left"
-              onClick={handleUserPofile}
-            >
-              <FaUserCircle className="mr-2 text-lg" />
-              Thông tin cá nhân
-            </button>
+
             {user.role === "USER" && (
-              <button
-                className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left"
-                onClick={() => {
-                  onClose();
-                  navigate("/my-orders");
-                }}
-              >
-                <FaClipboardList className="mr-2 text-lg" />
-                Đơn hàng của tôi
-              </button>
+              <>
+                <button
+                  className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left"
+                  onClick={handleUserPofile}
+                >
+                  <FaUserCircle className="mr-2 text-lg" />
+                  Thông tin cá nhân
+                </button>
+                <button
+                  className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left"
+                  onClick={() => {
+                    onClose();
+                    navigate("/my-orders");
+                  }}
+                >
+                  <FaClipboardList className="mr-2 text-lg" />
+                  Đơn hàng của tôi
+                </button>
+              </>
             )}
 
             <button

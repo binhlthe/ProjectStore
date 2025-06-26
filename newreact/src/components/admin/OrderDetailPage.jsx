@@ -7,6 +7,7 @@ import { FaBoxOpen, FaRegClock } from 'react-icons/fa';
 import { MdOutlinePayment } from 'react-icons/md';
 import { BiSolidUser, BiSolidPhone } from 'react-icons/bi';
 import { PiMapPinLineBold } from 'react-icons/pi';
+import AdminChatBox from './AdminChatBox';
 
 const OrderDetailPage = () => {
     const { id } = useParams();
@@ -130,6 +131,7 @@ const OrderDetailPage = () => {
                     />
                 </div>
             )}
+            <AdminChatBox/>
         </div>
     );
 };

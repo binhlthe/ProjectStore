@@ -4,6 +4,7 @@ import { FaBoxOpen, FaClipboardList, FaChartLine } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
+import AdminChatBox from "./AdminChatBox";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -61,7 +62,9 @@ function AdminDashboard() {
             ))}
           </div>
         </div>
+        <AdminChatBox/>
       </main>
+
     </div>
   );
 }

@@ -5,18 +5,22 @@ import  { useEffect, useState } from "react";
 import axios from "axios";
 
 import React from "react";
-import { FaHome, FaStar, FaTshirt, FaSocks, FaUserAlt,FaShoppingBag  } from "react-icons/fa";
+import { FaHome, FaStar, FaTshirt, FaInfoCircle, FaUsers	,FaShoppingBag  } from "react-icons/fa";
 import { GiArmoredPants  } from 'react-icons/gi';
-import { MdNewReleases } from "react-icons/md";
+import { MdNewReleases ,MdInfoOutline} from "react-icons/md";
+import {AiOutlineUser} from "react-icons/ai";
+import {RiTeamLine} from "react-icons/ri";
 
 
 const menu = [
   { label: "Trang chủ", icon: <FaHome />, path: "/home" },
+  { label: "About", icon: <FaUsers />, path: "/about" },
   { label: "Top Seller", icon: <FaStar />, path: "/homeeee" },
   { label: "New Arrival", icon: <MdNewReleases  />, path: "/product/new-arrival" },
   { label: "Top", icon: <FaTshirt />, path: "/product/top" },
   { label: "Bottom", icon: <GiArmoredPants  />, path: "/product/bottom" },
   { label: "Accessory", icon: <FaShoppingBag  />, path: "/product/accessory" },
+
 ];
 
 
@@ -63,7 +67,7 @@ const Sidebar = ({ user }) => {
 
                   }`}
               >
-                <span className="text-lg">{item.icon}</span>
+                <span className="text-lg text-black-300">{item.icon}</span>
                 <span className="text-base">{item.label}</span>
               </div>
             </Link>

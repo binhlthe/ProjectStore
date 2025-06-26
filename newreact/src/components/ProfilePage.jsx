@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import ChatBox from "./client/ChatBox";
 import axios from "axios";
 import { FaPhone, FaMapMarkerAlt, FaEnvelope, FaUserEdit, FaBoxOpen, FaMoneyBillWave, FaMars, FaVenus, FaGenderless, FaCalendarAlt } from "react-icons/fa";
 
@@ -309,7 +310,7 @@ function ProfilePage() {
             </div>
           </div>
         )}
-
+        <ChatBox/>
         <Footer />
       </main>
 

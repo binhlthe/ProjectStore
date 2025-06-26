@@ -94,7 +94,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register","/login","/home","/changepw","/api/**","/user/**","/forgotpw","/resetpw", "/css/**","/auth/**", "/js/**", "/images/**").permitAll() // Cho phép truy cập trang đăng ký
 
-                        .requestMatchers("/api/products/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
 
 
                         .anyRequest().authenticated()

@@ -4,6 +4,7 @@ import { CheckCircle } from 'lucide-react';
 import Sidebar from "../Sidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
+import ChatBox from './ChatBox';
 
 const OrderSuccessPage = () => {
     const [user, setUser] = useState(() => {
@@ -53,7 +54,7 @@ const OrderSuccessPage = () => {
                             </Link>
                         </div>
                     </div>
-
+                    <ChatBox/>
                     <div className="mt-12">
                         <Footer user={user} />
                     </div>

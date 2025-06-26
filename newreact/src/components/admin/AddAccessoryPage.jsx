@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdminSidebar from "./AdminSidebar";
+import AdminChatBox from "./AdminChatBox";
 import Navbar from "../Navbar";
 
 function AddAccessoryPage() {
@@ -175,6 +176,7 @@ function AddAccessoryPage() {
                     </form>
                 </div>
             </div>
+            <AdminChatBox/>
         </div>
     );
 }

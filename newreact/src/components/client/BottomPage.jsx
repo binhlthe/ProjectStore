@@ -6,6 +6,7 @@ import UserDropdown from "../UserSidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
 import { FiFilter } from "react-icons/fi";
+import ChatBox from "./ChatBox";
 
 function BottomPage() {
   const [user, setUser] = useState(() => {
@@ -20,7 +21,7 @@ function BottomPage() {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownContainerRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
-const [priceFilter, setPriceFilter] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
 
   document.title = "BOTTOM - Levents";
 
@@ -34,18 +35,18 @@ const [priceFilter, setPriceFilter] = useState("");
             page: currentPage,
             size: pageSize,
             sort: sortBy,
-             name: searchTerm,
-            priceRange: priceFilter, 
+            name: searchTerm,
+            priceRange: priceFilter,
           }
         });
-          console.log(res.data);
-       if (Array.isArray(res.data.content)) {
-        
-  setProducts(res.data.content);
-} else {
-  console.error("Dữ liệu trả về không phải mảng:", res.data.content);
-  setProducts([]); // fallback an toàn
-}
+        console.log(res.data);
+        if (Array.isArray(res.data.content)) {
+
+          setProducts(res.data.content);
+        } else {
+          console.error("Dữ liệu trả về không phải mảng:", res.data.content);
+          setProducts([]); // fallback an toàn
+        }
         setTotalPages(res.data.totalPages);
       } catch (err) {
         console.error("Lỗi khi lấy sản phẩm top:", err);
@@ -88,51 +89,51 @@ const [priceFilter, setPriceFilter] = useState("");
             </div>
           </h1>
 
-         <div className="flex flex-col gap-4 mb-4">
-           {/* Hàng 1: Tìm tên và lọc giá */}
-           <div className="flex flex-col sm:flex-row gap-4 items-center">
-             <div className="relative w-full sm:w-60">
-               <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-               <input
-                 type="text"
-                 placeholder="Tìm theo tên..."
-                 value={searchTerm}
-                 onChange={(e) => setSearchTerm(e.target.value)}
-                 className="pl-10 pr-4 py-2 border rounded-md w-full"
-               />
-             </div>
-         
-             <div className="relative w-full sm:w-60">
-               <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-               <select
-                 value={priceFilter}
-                 onChange={(e) => setPriceFilter(e.target.value)}
-                 className="pl-10 pr-4 py-2 border rounded-md w-full"
-               >
-                 <option value="">Lọc theo giá</option>
-                 <option value="0-300000">Dưới 300.000₫</option>
-                 <option value="300000-500000">300.000₫ - 500.000₫</option>
-                 <option value="500000-1000000">Trên 500.000₫</option>
-               </select>
-             </div>
-           </div>
-         
-           {/* Hàng 2: Dropdown sắp xếp */}
-           <div className="relative w-full sm:w-60">
-             <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-             <select
-               value={sortBy}
-               onChange={(e) => setSortBy(e.target.value)}
-               className="pl-10 pr-4 py-2 border rounded-md w-full"
-             >
-               <option value="">Sắp xếp</option>
-               <option value="price-asc">Giá tăng dần</option>
-               <option value="price-desc">Giá giảm dần</option>
-               <option value="name-asc">Tên A-Z</option>
-               <option value="name-desc">Tên Z-A</option>
-             </select>
-           </div>
-         </div>
+          <div className="flex flex-col gap-4 mb-4">
+            {/* Hàng 1: Tìm tên và lọc giá */}
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="relative w-full sm:w-60">
+                <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Tìm theo tên..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border rounded-md w-full"
+                />
+              </div>
+
+              <div className="relative w-full sm:w-60">
+                <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <select
+                  value={priceFilter}
+                  onChange={(e) => setPriceFilter(e.target.value)}
+                  className="pl-10 pr-4 py-2 border rounded-md w-full"
+                >
+                  <option value="">Lọc theo giá</option>
+                  <option value="0-300000">Dưới 300.000₫</option>
+                  <option value="300000-500000">300.000₫ - 500.000₫</option>
+                  <option value="500000-1000000">Trên 500.000₫</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Hàng 2: Dropdown sắp xếp */}
+            <div className="relative w-full sm:w-60">
+              <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="pl-10 pr-4 py-2 border rounded-md w-full"
+              >
+                <option value="">Sắp xếp</option>
+                <option value="price-asc">Giá tăng dần</option>
+                <option value="price-desc">Giá giảm dần</option>
+                <option value="name-asc">Tên A-Z</option>
+                <option value="name-desc">Tên Z-A</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -172,9 +173,8 @@ const [priceFilter, setPriceFilter] = useState("");
               <button
                 key={i}
                 onClick={() => setCurrentPage(i)}
-                className={`px-3 py-1 border rounded ${
-                  i === currentPage ? "bg-black text-white" : ""
-                }`}
+                className={`px-3 py-1 border rounded ${i === currentPage ? "bg-black text-white" : ""
+                  }`}
               >
                 {i + 1}
               </button>
@@ -191,8 +191,10 @@ const [priceFilter, setPriceFilter] = useState("");
             </button>
           </div>
         )}
+        <ChatBox />
 
         <Footer />
+
       </main>
     </div>
   );

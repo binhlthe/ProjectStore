@@ -27,6 +27,10 @@ import OrderDetailPage from './components/admin/OrderDetailPage';
 import OrderPage from './components/client/OrderPage';
 import DepositPage from './components/client/DepositPage';
 import OrderSuccessPage from './components/client/OrderSuccessPage';
+import ChatBox from './components/client/ChatBox';
+import AdminChatPage from './components/admin/AdminChatPage';
+import AboutPage from './components/client/AboutPage';
+import AdminChatBox from './components/admin/AdminChatBox';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -61,6 +65,10 @@ function App() {
            <Route path="/my-orders" element={<OrderPage  />} />
            <Route path="/deposit" element={<DepositPage  />} />
            <Route path="/success-order" element={<OrderSuccessPage  />} />
+           <Route path="/chat" element={<ChatBox  />} />
+           <Route path="/chatAdmin" element={<AdminChatPage/>}/>
+           <Route path="/about" element={<AboutPage />} />
+           <Route path="/admin/chat" element={<AdminChatBox  />} />
 
           <Route element={<ProtectedRoute />}>
           </Route>

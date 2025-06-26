@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaTrash, FaPlus } from "react-icons/fa";
 import AdminSidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
+import AdminChatBox from "./AdminChatBox";
 import axios from "axios";
 
 function TopPage() {
@@ -171,6 +172,7 @@ function TopPage() {
                     />
                 </div>
             )}
+            <AdminChatBox />
         </div>
     );
 }

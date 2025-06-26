@@ -9,6 +9,7 @@ import 'swiper/css/navigation';
 import Sidebar from "../Sidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
+import ChatBox from "./ChatBox";
 
 function HomePage() {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -254,7 +255,7 @@ function HomePage() {
             ))}
           </Swiper>
         </section>
-
+            <ChatBox/>
         <Footer />
       </main>
     </div>

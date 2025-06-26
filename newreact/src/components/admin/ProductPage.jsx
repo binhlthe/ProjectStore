@@ -7,6 +7,7 @@ import { GiArmoredPants } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
+import AdminChatBox from "./AdminChatBox";
 import axios from 'axios';
 
 function ProductPage() {
@@ -16,8 +17,8 @@ function ProductPage() {
     return cached ? JSON.parse(cached) : null;
   });
   const [tops, setTops] = useState([]);
-    const [bottoms, setBottoms] = useState([]);
-    const [accessories, setAccessories] = useState([]);
+  const [bottoms, setBottoms] = useState([]);
+  const [accessories, setAccessories] = useState([]);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownContainerRef = useRef(null);
 
@@ -32,13 +33,13 @@ function ProductPage() {
   }, []);
 
   useEffect(() => {
-  const fetchProducts = async () => {
+    const fetchProducts = async () => {
       try {
         const res1 = await axios.get('http://localhost:8080/api/admin/products/getAllTops');
         const res2 = await axios.get('http://localhost:8080/api/admin/products/getAllBottoms');
         const res3 = await axios.get('http://localhost:8080/api/admin/products/getAllAccessories');
-        
-       
+
+
         setTops(res1.data); // Lưu vào state đã có price
         console.log(tops);
         setBottoms(res2.data);
@@ -51,7 +52,7 @@ function ProductPage() {
     fetchProducts();
   }, []);
 
-  
+
   const categories = [
     {
       name: "Top",
@@ -108,6 +109,7 @@ function ProductPage() {
             </div>
           ))}
         </div>
+        <AdminChatBox />
       </main>
     </div>
   );

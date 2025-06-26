@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AdminSidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
+import AdminChatBox from "./AdminChatBox";
 import { FaEye, FaEdit } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 
@@ -165,6 +166,7 @@ const AdminOrderPage = () => {
                         </tbody>
                     </table>
                 </div>
+                <AdminChatBox/>
             </main>
         </div>
     );

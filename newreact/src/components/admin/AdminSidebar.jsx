@@ -21,9 +21,9 @@ const Sidebar = ({ user }) => {
     <aside className="w-64 bg-white shadow-lg flex flex-col justify-between">
       <div>
         <div className="p-6 text-2xl font-bold text-blue-600 border-b border-gray-200">
-          MyShop Admin
+         
         </div>
-        <nav className="mt-4">
+        <nav className="mt-10">
           {menu.map((item, idex) => (
             <Link to={item.path} key={idex}>
               <div
@@ -42,12 +42,12 @@ const Sidebar = ({ user }) => {
 
       <div className="flex items-center gap-3 p-6 border-t border-gray-200">
         <img
-          src={user?.username ? user.avatar : "/images/avatar.png"}
+          src={user?.name ? user.avatar : "/images/avatar.png"}
           alt="Avatar"
           className="w-10 h-10 rounded-full object-cover"
         />
         <p className="text-sm font-medium text-gray-800">
-          {user?.username || "Guest"}
+          {user?.name || "Guest"}
         </p>
       </div>
     </aside>

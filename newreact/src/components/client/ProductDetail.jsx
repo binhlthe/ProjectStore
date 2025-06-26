@@ -5,6 +5,7 @@ import Sidebar from '../Sidebar';
 import { useCart } from "./CartContext";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
+import ChatBox from './ChatBox';
 import Swal from 'sweetalert2';
 
 function ProductDetail() {
@@ -299,6 +300,7 @@ function ProductDetail() {
             </button>
           </div>
         </div>
+        <ChatBox />
         <Footer />
       </main>
     </div>

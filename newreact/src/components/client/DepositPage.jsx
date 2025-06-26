@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-
+import axios from "axios";
 import Sidebar from "../Sidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
-import axios from "axios";
+import ChatBox from "./ChatBox";
+
 
 const DepositPage = ({ }) => {
     const bankCode = "TPB"; // mã ngân hàng (ví dụ: MB = MB Bank)
@@ -173,6 +174,7 @@ const DepositPage = ({ }) => {
                         </table>
                     </div>
                 </div>
+                <ChatBox />
                 <Footer />
             </main>
 

@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 import Slider from 'react-slick';
 import Sidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
+import AdminChatBox from "./AdminChatBox";
 import { FaChevronLeft, FaChevronRight, FaTimes, FaEdit, FaEyeSlash } from 'react-icons/fa';
 import AddVariantModel from './AddVariantModel';
 import AddSizeModel from './AddSizeModel';
@@ -460,7 +461,7 @@ const ProductDetail = () => {
           }}
         />
 
-
+        <AdminChatBox />
       </main>
     </div>
   );

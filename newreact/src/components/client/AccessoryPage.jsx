@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
-import UserDropdown from "../UserSidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
+import ChatBox from "./ChatBox";
 import { FiFilter } from "react-icons/fi";
 
 function AccessoryPage() {
@@ -190,7 +190,7 @@ function AccessoryPage() {
             </button>
           </div>
         )}
-
+        <ChatBox />
         <Footer />
       </main>
     </div>

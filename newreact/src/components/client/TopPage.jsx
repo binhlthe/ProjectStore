@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
+import ChatBox from "./ChatBox";
 import { FiFilter } from "react-icons/fi";
 
 function TopPage() {
@@ -39,33 +40,7 @@ function TopPage() {
         });
         console.log(res.data);
         const productTops = res.data.content || [];
-        // const productTopsWithPrices = await Promise.all(
-        //   productTops.map(async (product) => {
-        //     try {
-        //       console.log(product.id);
-        //       const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${product.id}`);
-        //       const variants = variantRes.data || [];
-
-        //       // Tìm giá thấp nhất
-        //       const lowestPrice = variants.length > 0
-        //         ? Math.min(...variants.map(v => v.price))
-        //         : null;
-
-        //       // Gán giá thấp nhất vào object product mới (không ảnh hưởng entity)
-        //       return {
-        //         ...product,
-        //         price: lowestPrice
-        //       };
-        //     } catch (err) {
-        //       console.error("Error fetching variants:", err);
-        //       return {
-        //         ...product,
-        //         price: null
-        //       };
-        //     }
-        //   })
-        // );
-        setProducts(productTops); 
+        setProducts(productTops);
         if (!Array.isArray(res.data.content)) {
 
           console.error("Dữ liệu trả về không phải mảng:", res.data.content);
@@ -217,7 +192,7 @@ function TopPage() {
             </button>
           </div>
         )}
-
+        <ChatBox />
         <Footer />
       </main>
     </div>
