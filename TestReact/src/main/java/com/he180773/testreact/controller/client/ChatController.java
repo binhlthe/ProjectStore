@@ -42,7 +42,7 @@ public class ChatController {
 
 
         // Gửi về tất cả admin đang theo dõi (nếu có)
-        messagingTemplate.convertAndSend("/topic/admin-messages", message);
+        messagingTemplate.convertAndSend("/topic/admin-messages", saved);
 
 
 // Gửi về cho người gửi (nếu cần echo lại)

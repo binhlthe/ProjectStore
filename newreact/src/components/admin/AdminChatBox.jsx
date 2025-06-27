@@ -38,6 +38,7 @@ const AdminChatBox = () => {
     const fetchMessages = async (userId) => {
         try {
             const res = await axios.get(`http://localhost:8080/api/admin/chat/adminMessages/${userId}`);
+            console.log(res.data);
             setMessages(res.data);
             console.log("abc");
             setTimeout(() => scrollToBottom(), 0);
@@ -56,6 +57,7 @@ const AdminChatBox = () => {
             webSocketFactory: () => socket,
             onConnect: () => {
                 console.log("Admin connected");
+                console.log(selectedUser.userId);
                 client.subscribe("/topic/admin-messages", (message) => {
                     const msg = JSON.parse(message.body);
 
@@ -65,6 +67,7 @@ const AdminChatBox = () => {
                         (msg.senderId === selectedUser.userId || msg.receiverId === selectedUser.userId)
                     ) {
                         setMessages((prev) => [...prev, msg]);
+                        console.log(messages);
 
                         // Scroll xuống đáy khung chat
                         setTimeout(() => scrollToBottom(), 0);
@@ -72,6 +75,25 @@ const AdminChatBox = () => {
 
                     // Update lại danh sách user (nếu có preview tin nhắn mới)
                     fetchUsers(); // hoặc cập nhật state `users` tương ứng
+                });
+                
+                client.subscribe(`/topic/message-read/${selectedUser.userId}`, (message) => {
+                    const updatedMsg = JSON.parse(message.body);
+                    console.log("📬 Tin nhắn đã được đọc:", updatedMsg);
+
+                    setMessages((prevMessages) =>
+                        prevMessages.map((msg) => {
+                            const normalizeTime = (dateStr) => Math.floor(new Date(dateStr).getTime() / 1000);
+                            const isSameSecond = normalizeTime(msg.sentAt) === normalizeTime(updatedMsg.sentAt);
+                            return (
+                                msg.senderId === updatedMsg.senderId &&
+                                msg.content === updatedMsg.content &&
+                                isSameSecond
+                            )
+                                ? { ...msg, id: updatedMsg.id, status: "READ" }
+                                : msg;
+                        })
+                    );
                 });
 
             },
@@ -160,7 +182,39 @@ const AdminChatBox = () => {
             if (selectedUser) scrollToBottom();
         }, 0);
     };
+    console.log(messages);
 
+    const lastReadMessageId = [...messages]
+        .reverse()
+        .find((m) => m.senderId == "admin" && m.status === "READ")?.id;
+
+
+    useEffect(() => {
+        if (!chatVisible || messages.length === 0) return;
+
+        const lastMsg = messages[messages.length - 1];
+        console.log(typeof "READ");
+        console.log(typeof lastMsg.status);
+        console.log(lastMsg.status +" "+ (lastMsg.status !== "READ"));
+        console.log(lastMsg.status !== "READ");
+        if (
+            lastMsg.senderId !== "admin" &&  // Là tin nhắn của admin
+            lastMsg.status !== "READ"        // Và chưa được đọc
+        ) {
+            axios.post("http://localhost:8080/api/admin/chat/markAsRead", {
+                messageId: lastMsg.id,
+                userId: user.id,
+            }).then(() => {
+                // Cập nhật lại tin nhắn trong state
+                setMessages((prev) =>
+                    prev.map((msg) =>
+                        msg.id === lastMsg.id ? { ...msg, status: "READ" } : msg
+                    )
+                );
+                console.log(messages);
+            });
+        }
+    }, [chatVisible, messages]);
 
     return (
         <>
@@ -168,7 +222,7 @@ const AdminChatBox = () => {
                 onClick={handleToggleChat}
                 className="fixed bottom-6 right-6 z-50 bg-red-500 text-white p-4 rounded-full shadow-lg hover:bg-red-600"
             >
-                <FaComments size={24}/>
+                <FaComments size={24} />
             </button>
 
             {chatVisible && (
@@ -274,6 +328,10 @@ const AdminChatBox = () => {
                         <div className="flex-1 overflow-y-auto px-3 py-2 bg-gray-50 space-y-2" ref={messagesRef}>
                             {messages.map((msg, idx) => {
                                 const isAdmin = msg.senderId === "admin";
+
+
+
+                                const isLastReadMessage = msg.id && (msg.id === lastReadMessageId);
                                 const isLast =
                                     idx === messages.length - 1 || messages[idx + 1].senderId !== msg.senderId;
 
@@ -281,6 +339,9 @@ const AdminChatBox = () => {
                                     <div
                                         key={idx}
                                         className={`flex items-end ${isAdmin ? "justify-end" : "justify-start"}`}
+                                        style={{
+                                            marginBottom: isLastReadMessage ? "24px" : undefined, // 👈 Cách ra 24px nếu là tin cuối đã đọc
+                                        }}
                                     >
                                         {!isAdmin && (
                                             <div className="w-8 mr-1 flex-shrink-0">
@@ -296,7 +357,7 @@ const AdminChatBox = () => {
                                             </div>
                                         )}
 
-                                        <div className="flex flex-col max-w-[70%]">
+                                        <div className="flex flex-col max-w-[70%] relative">
                                             <div
                                                 className={`px-3 py-2 rounded-lg ${isAdmin
                                                     ? "bg-blue-500 text-white"
@@ -310,6 +371,15 @@ const AdminChatBox = () => {
                                                 <div className={`text-xs text-gray-500 mt-1 ${isAdmin ? "text-right" : ""}`}>
                                                     {formatTime(msg.sentAt)}
                                                 </div>
+                                            )}
+                                            {/* ✅ Avatar admin chỉ hiển thị nếu là tin nhắn cuối cùng đã đọc */}
+                                            {isAdmin && isLastReadMessage && (
+                                                <img
+                                                    src="/images/logo-admin.png"
+                                                    alt="Đã đọc"
+                                                    title="Đã đọc"
+                                                    className="w-4 h-4 rounded-full absolute -bottom-5 right-0 border border-white "
+                                                />
                                             )}
                                         </div>
 

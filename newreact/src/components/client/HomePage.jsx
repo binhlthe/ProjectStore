@@ -89,7 +89,7 @@ function HomePage() {
     document.title = "Levents";
   }, []);
 
-  const ProductDetail = ({ product ,isNew }) => {
+  const ProductDetail = ({ product, isNew }) => {
     const navigate = useNavigate(); // Hook điều hướng
 
     const handleClick = () => {
@@ -98,28 +98,27 @@ function HomePage() {
 
     return (
       <div
-        className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-md transition-all cursor-pointer"
-        onClick={handleClick}
-      >
-        <img
-          src={product.thumbnailImage}
-          alt={product.name}
-          className="w-full h-auto object-contain aspect-[3/4] rounded-md mb-2"
-        />
-
-        {/* Tag NEW nếu là sản phẩm mới */}
-        {isNew && (
-          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow-md uppercase z-10">
-            NEW
-          </div>
-        )}
-
-        <h3 className="text-lg font-semibold line-clamp-2 min-h-[3.5rem]">
-          {product.name}
-        </h3>
-
-        <p className="text-red-600">{Number(product.price).toLocaleString('vi-VN')} ₫</p>
+  className="relative border rounded-xl shadow hover:shadow-lg transition-all bg-white p-3 flex flex-col cursor-pointer"
+  onClick={handleClick}
+>
+  <div className="relative w-full aspect-[3/4] mb-2">
+    <img
+      src={product.thumbnailImage}
+      alt={product.name}
+      className="absolute inset-0 w-full h-full object-cover rounded-lg"
+    />
+    {isNew && (
+      <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
+        NEW
       </div>
+    )}
+  </div>
+  <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 min-h-[3rem]">
+    {product.name}
+  </h3>
+  <p className="text-red-500 font-medium">{Number(product.price).toLocaleString('vi-VN')} ₫</p>
+</div>
+
     );
   };
 
@@ -186,6 +185,8 @@ function HomePage() {
           <Swiper
             modules={[Navigation]}
             navigation
+            loop
+            grabCursor
             spaceBetween={20}
             slidesPerView={1}
             breakpoints={{
@@ -193,6 +194,7 @@ function HomePage() {
               1024: { slidesPerView: 3 },
             }}
           >
+
             {tops.map((product, index) => (
               <SwiperSlide key={index}>
                 <ProductDetail product={product} />
@@ -255,7 +257,7 @@ function HomePage() {
             ))}
           </Swiper>
         </section>
-            <ChatBox/>
+        <ChatBox />
         <Footer />
       </main>
     </div>

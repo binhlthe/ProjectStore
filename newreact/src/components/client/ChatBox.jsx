@@ -76,9 +76,9 @@ const ChatBox = () => {
       webSocketFactory: () => socket,
       onConnect: () => {
         console.log("Connected");
-        console.log(chatVisible);
+
+        // Nhận tin nhắn mới từ người khác
         client.subscribe("/user/queue/messages", (message) => {
-          console.log("Hihi");
           const msg = JSON.parse(message.body);
           setMessages((prev) => [...prev, msg]);
 
@@ -88,12 +88,42 @@ const ChatBox = () => {
           }
           setTimeout(() => scrollToBottom(), 50);
         });
+
+        // ✅ Nhận thông báo "tin nhắn đã đọc" từ server
+        client.subscribe("/user/queue/message-read", (message) => {
+          const updatedMsg = JSON.parse(message.body);
+          console.log("📬 Tin nhắn đã được đọc:", updatedMsg);
+
+          setMessages((prevMessages) => {
+            console.log("prevMessages", prevMessages);
+            return prevMessages.map((msg) => {
+              const normalizeTime = (dateStr) => {
+                const date = new Date(dateStr);
+                return Math.floor(date.getTime() / 1000); // loại bỏ mili-giây
+              };
+
+              const isSameSecond =
+                normalizeTime(msg.sentAt) === normalizeTime(updatedMsg.sentAt);
+              console.log(isSameSecond);
+              return (
+                Number(msg.senderId) === Number(updatedMsg.senderId) &&
+                msg.content === updatedMsg.content &&
+                isSameSecond
+              )
+                ? { ...msg, id: updatedMsg.id, status: "READ" }
+                : msg;
+            });
+          });
+        });
       },
     });
+
     client.activate();
     stompClient.current = client;
+
     return () => client.deactivate();
   }, []);
+
 
   const handleScroll = () => {
     const container = messagesContainerRef.current;
@@ -147,12 +177,46 @@ const ChatBox = () => {
     });
   };
 
-  
+
 
   const lastReadMessageId = [...messages]
     .reverse()
     .find((m) => m.senderId == user.id && m.status === "READ")?.id;
-    
+
+
+  useEffect(() => {
+    if (!chatVisible || messages.length === 0) return;
+
+    const lastMsg = messages[messages.length - 1];
+    if (
+      Number(lastMsg.senderId) !== Number(user.id) &&  // Là tin nhắn của admin
+      lastMsg.status !== "READ"        // Và chưa được đọc
+    ) {
+      axios.post("http://localhost:8080/api/admin/chat/markAsRead", {
+        messageId: lastMsg.id,
+        userId: user.id,
+      }).then(() => {
+        // Cập nhật lại tin nhắn trong state
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === lastMsg.id ? { ...msg, status: "READ" } : msg
+          )
+        );
+      });
+    }
+  }, [chatVisible, messages]);
+
+  const handleToggleChat = async () => {
+        setChatVisible((prev) => {
+            const nextState = !prev;
+
+            return nextState;
+        });
+
+        setTimeout(() => {
+            scrollToBottom();
+        }, 0);
+    };
 
 
 
@@ -164,7 +228,7 @@ const ChatBox = () => {
 
           <button
             onClick={() => {
-              setChatVisible(true);
+              handleToggleChat();
               setUnreadCount(0); // reset khi mở
             }}
             className="fixed bottom-6 right-6 z-50 bg-red-500 text-white p-4 rounded-full shadow-lg hover:bg-red-600 transition-all"
@@ -203,18 +267,18 @@ const ChatBox = () => {
               >
                 {messages.map((msg, idx) => {
                   const isCurrentUser = msg.senderId == user.id;
-                  console.log(idx === messages.length-1);
-                  
+                  console.log(idx === messages.length - 1);
+
                   const isLastInGroup =
                     idx === messages.length - 1 ||
-                   String(messages[idx + 1].senderId) !== String(msg.senderId);
+                    String(messages[idx + 1].senderId) !== String(msg.senderId);
 
                   const isLastReadMessage = msg.id && (msg.id === lastReadMessageId);
 
 
                   return (
                     <div
-                      key={idx}
+                      key={msg.id || idx}
                       className={`flex ${isCurrentUser ? "justify-end" : "justify-start"} items-end  `}
                       style={{
                         marginBottom: isLastReadMessage ? "24px" : undefined, // 👈 Cách ra 24px nếu là tin cuối đã đọc

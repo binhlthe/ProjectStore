@@ -26,9 +26,10 @@ public class AdminChatController {
     private final UserRepository userRepository;
     private SimpMessagingTemplate messagingTemplate;
 
-    public AdminChatController(MessageRepository messageRepository, UserRepository userRepository) {
+    public AdminChatController(MessageRepository messageRepository, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping("/chat-users")
@@ -99,7 +100,11 @@ public class AdminChatController {
     public List<Message> getMessagesWithUser(@PathVariable String userId) {
         String chatroomId = generateChatroomId(userId, "admin");
         System.out.println("chatroomId: "+chatroomId);
-        return messageRepository.findByChatRoomIdOrderBySentAtAsc(chatroomId);
+        List<Message> ms = messageRepository.findByChatRoomIdOrderBySentAtAsc(chatroomId);
+        for (Message m : ms) {
+            System.out.println("Status: "+"id "+m.getStatus());
+        }
+        return ms;
     }
 
     private String generateChatroomId(String userId1, String userId2) {
@@ -128,12 +133,41 @@ public class AdminChatController {
         if (optionalMessage.isEmpty()) return ResponseEntity.notFound().build();
 
         Message message = optionalMessage.get();
+        Message saved = new Message();
+        System.out.println("SenderId: "+message.getSenderId());
+        System.out.println(!message.getSenderId().equals("admin"));
 
         // Chỉ update nếu currentUser là người nhận và chưa đọc
-        if (message.getReceiverId().equals(currentUserId) && !"READ".equals(message.getStatus())) {
-            message.setStatus("READ");
-            messageRepository.save(message);
+        if(message.getSenderId().equals("admin")) {
+            System.out.println("hihihihii");
+            if (message.getReceiverId().equals(currentUserId) && !"READ".equals(message.getStatus())) {
+                System.out.println("hihi");
+                message.setStatus("READ");
+                saved=messageRepository.save(message);
+                messagingTemplate.convertAndSend(
+                        "/topic/message-read/" + message.getReceiverId(),
+                        saved
+                );
+
+            }
+        } else{
+            System.out.println("hihiih: "+!"READ".equals(message.getStatus()));
+            if(!"READ".equals(message.getStatus())){
+                System.out.println("hehe");
+                message.setStatus("READ");
+                saved=messageRepository.save(message);
+
+                messagingTemplate.convertAndSendToUser(
+                        String.valueOf(message.getSenderId()),
+                        "/queue/message-read",
+                        saved
+                );
+            }
         }
+
+
+
+
 
         return ResponseEntity.ok().build();
     }
