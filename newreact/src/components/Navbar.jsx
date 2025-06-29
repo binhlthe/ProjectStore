@@ -28,6 +28,10 @@ function Navbar() {
 
 
   useEffect(() => {
+    if (!user || !user.id ) {
+      
+      return;
+    }
     const fetchProfile = async () => {
       try {
         const storedUser = localStorage.getItem("user");
@@ -158,7 +162,7 @@ function Navbar() {
           />
 
 
-          <FaSearch className="absolute left-3 top-3 text-gray-400" />
+          <FaSearch className="absolute left-4 top-4 text-gray-400" />
         </div>
         )}
         {searchResults.length > 0 && (

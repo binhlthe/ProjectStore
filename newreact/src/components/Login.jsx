@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-
-
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext'; // 👈 Nhớ đúng đường dẫn
 
 function Login() {
-  // bên trong component:
   const navigate = useNavigate();
-
-
+  const { login } = useAuth(); // 👈 Sử dụng context thay vì localStorage trực tiếp
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -23,16 +18,18 @@ function Login() {
         username,
         password,
       }, { withCredentials: true });
+
       if (res.status === 200) {
-        const user = res.data; // Đây giờ là object user
-        localStorage.setItem("user", JSON.stringify(user));
+        const user = res.data; // Đây là object user từ backend
+        login(user); // 👈 Cập nhật context và localStorage cùng lúc
         setMessage("Đăng nhập thành công!");
+
+        // Điều hướng theo vai trò
         if (user.role === "ADMIN") {
           navigate("/admin");
-          return;
+        } else {
+          navigate("/home");
         }
-        navigate("/home");
-
       }
     } catch (err) {
       setMessage(err.response?.data || 'Lỗi server');
@@ -45,10 +42,7 @@ function Login() {
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">
           Đăng nhập
         </h2>
-        <form
-          onSubmit={handleLogin}
-          className="space-y-4"
-        >
+        <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="text"
             placeholder="Tên đăng nhập"
@@ -57,7 +51,6 @@ function Login() {
             onChange={(e) => setUsername(e.target.value)}
             required
           />
-
           <input
             type="password"
             placeholder="Mật khẩu"
@@ -66,19 +59,15 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-
-
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition"
           >
             Đăng nhập
           </button>
-
           {message && (
             <p className="mt-4 text-center text-red-600 font-medium">{message}</p>
           )}
-
         </form>
         <p className="text-center text-sm mt-4">
           Chưa có tài khoản?{" "}

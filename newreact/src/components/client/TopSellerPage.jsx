@@ -2,13 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
-import UserDropdown from "../UserSidebar";
 import Footer from "../Footer";
 import Navbar from "../Navbar";
-import { FiFilter } from "react-icons/fi";
 import ChatBox from "./ChatBox";
+import { FiFilter } from "react-icons/fi";
 
-function BottomPage() {
+function TopSellerPage() {
   const [user, setUser] = useState(() => {
     const cached = localStorage.getItem("user");
     return cached ? JSON.parse(cached) : null;
@@ -23,14 +22,14 @@ function BottomPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
 
-  document.title = "BOTTOM - Levents";
+  document.title = "TOP SELLER - Levents";
 
   const pageSize = 6; // mỗi trang 6 sản phẩm
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/products/sort/bottoms`, {
+        const res = await axios.get(`http://localhost:8080/api/products/sort/top-sellers`, {
           params: {
             page: currentPage,
             size: pageSize,
@@ -40,10 +39,10 @@ function BottomPage() {
           }
         });
         console.log(res.data);
-        if (Array.isArray(res.data.content)) {
+        const productTops = res.data.content || [];
+        setProducts(productTops);
+        if (!Array.isArray(res.data.content)) {
 
-          setProducts(res.data.content);
-        } else {
           console.error("Dữ liệu trả về không phải mảng:", res.data.content);
           setProducts([]); // fallback an toàn
         }
@@ -74,6 +73,7 @@ function BottomPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  console.log(products);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -83,7 +83,7 @@ function BottomPage() {
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">
-            Tất cả sản phẩm BOTTOM
+            Tất cả sản phẩm TOP SELLER
             <div className="text-base font-normal ml-2 text-gray-500">
               ({products.length} sản phẩm / trang {currentPage + 1}/{totalPages})
             </div>
@@ -134,10 +134,11 @@ function BottomPage() {
               </select>
             </div>
           </div>
+
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+          {Array.isArray(products) && products.map((product) => (
             <div
               key={product.id}
               onClick={() => handleProductClick(product.id)}
@@ -193,12 +194,10 @@ function BottomPage() {
           </div>
         )}
         <ChatBox />
-
         <Footer />
-
       </main>
     </div>
   );
 }
 
-export default BottomPage;
+export default TopSellerPage;

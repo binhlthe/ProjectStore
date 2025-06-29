@@ -15,7 +15,7 @@ import {RiTeamLine} from "react-icons/ri";
 const menu = [
   { label: "Trang chủ", icon: <FaHome />, path: "/home" },
   { label: "About", icon: <FaUsers />, path: "/about" },
-  { label: "Top Seller", icon: <FaStar />, path: "/homeeee" },
+  { label: "Top Seller", icon: <FaStar />, path: "/product/top-seller" },
   { label: "New Arrival", icon: <MdNewReleases  />, path: "/product/new-arrival" },
   { label: "Top", icon: <FaTshirt />, path: "/product/top" },
   { label: "Bottom", icon: <GiArmoredPants  />, path: "/product/bottom" },

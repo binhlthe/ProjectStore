@@ -140,7 +140,8 @@ function NewArrivalPage() {
             <div
               key={product.id}
               onClick={() => handleProductClick(product.id)}
-              className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-md transition-all cursor-pointer"
+              className="border rounded-lg shadow-sm p-4 bg-white hover:shadow-md transform hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+
             >
               <img
                 src={product.thumbnailImage}

@@ -55,7 +55,7 @@ const OrderDetailPage = () => {
     if (!order) return <div className="text-center mt-20 text-xl">Đang tải đơn hàng...</div>;
 
     return (
-        <div className="flex bg-gray-100 min-h-screen">
+        <div className="flex bg-gray-100 h-screen">
             <Navbar user={user} />
             <AdminSidebar user={user} />
 

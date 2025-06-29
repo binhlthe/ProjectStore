@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -29,6 +30,22 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     ORDER BY m.sentAt DESC
 """)
     List<Message> findLastMessageWithAdmin(@Param("userId") String userId, Pageable pageable);
+
+    Integer countByReceiverIdAndStatus(String receiverId, String status);
+
+    @Query("SELECT m FROM Message m " +
+            "WHERE m.chatRoomId = :chatRoomId " +
+            "AND m.receiverId = :receiverId " +
+            "AND m.status <> 'READ' " )
+    List<Message> findUnreadMessagesBefore(
+            @Param("chatRoomId") String chatRoomId,
+            @Param("receiverId") String receiverId
+    );
+
+    List<Message> findAllByReceiverIdAndStatus( String receiver,String status);
+
+
+
 
 
 }

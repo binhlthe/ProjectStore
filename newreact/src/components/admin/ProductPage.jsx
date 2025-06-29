@@ -84,35 +84,45 @@ function ProductPage() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Navbar user={user} />
-      <AdminSidebar user={user} />
+  <div className="flex min-h-screen bg-gray-100">
+    <Navbar user={user} />
+    <AdminSidebar user={user} />
 
-      <main className="flex-1 mt-[72px] p-8 overflow-y-auto">
-        <h1 className="text-3xl font-bold text-gray-800 text-center mb-10">
-          Danh Mục Sản Phẩm
-        </h1>
+    <main className="flex-1 mt-[72px] p-6 overflow-y-auto">
+      <h1 className="text-3xl font-bold text-gray-800 text-center mb-10">
+        Danh Mục Sản Phẩm
+      </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {categories.map((cat, index) => (
-            <div
-              key={index}
-              className={`rounded-xl shadow-sm ${cat.bg} ${cat.hover} transition-all duration-200 cursor-pointer flex items-center p-5`}
-              onClick={cat.onClick}
-            >
-              <div className="mr-5">{cat.icon}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        {categories.map((cat, index) => (
+          <div
+            key={index}
+            className={`rounded-2xl shadow-sm ${cat.bg} transition-all duration-200 cursor-pointer hover:shadow-lg transform hover:-translate-y-1`}
+            onClick={cat.onClick}
+          >
+            <div className="flex items-center p-6 gap-4">
+              {/* Icon trong vòng tròn */}
+              <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-full bg-gray-100">
+                {cat.icon}
+              </div>
+
+              {/* Nội dung */}
               <div>
-                <h2 className="text-lg font-semibold text-gray-800">{cat.name}</h2>
+                <h2 className="text-xl font-semibold text-gray-800">{cat.name}</h2>
                 <p className="text-gray-600 text-sm">{cat.description}</p>
-                <p className="text-gray-500 mt-1 text-xs italic">Tổng sản phẩm: {cat.total}</p>
+                <p className="text-blue-600 mt-1 text-sm font-medium">
+                  Tổng sản phẩm: {cat.total}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-        <AdminChatBox />
-      </main>
-    </div>
-  );
+          </div>
+        ))}
+      </div>
+
+      <AdminChatBox />
+    </main>
+  </div>
+);
 }
 
 export default ProductPage;

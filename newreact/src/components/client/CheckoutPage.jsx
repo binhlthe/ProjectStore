@@ -170,11 +170,11 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex bg-gray-100 h-screen">
       <Navbar user={user} />
       <Sidebar user={user} />
-
-      <div className="flex-1 mt-[80px] px-6 pb-10">
+          <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-8 ">
+      <div className="flex-1  px-6 pb-10">
         <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Xác Nhận Đơn Hàng</h2>
 
         <div className="flex flex-col md:flex-row gap-8">
@@ -251,6 +251,7 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+      </main>
     </div>
   );
 };

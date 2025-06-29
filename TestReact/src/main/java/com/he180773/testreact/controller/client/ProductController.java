@@ -3,6 +3,7 @@ package com.he180773.testreact.controller.client;
 import com.he180773.testreact.dto.ProductDTO;
 import com.he180773.testreact.entity.Product;
 import com.he180773.testreact.repository.ProductRepository;
+import com.he180773.testreact.service.OrderService;
 import com.he180773.testreact.service.ProductService;
 import com.he180773.testreact.service.SizeService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,12 +25,14 @@ public class ProductController {
     private final ProductService productService;
     private final ProductRepository productRepository;
     private final SizeService sizeService;
+    private final OrderService orderService;
 
     public ProductController(ProductService productService, ProductRepository productRepository,
-                             SizeService sizeService) {
+                             SizeService sizeService, OrderService orderService) {
         this.productService = productService;
         this.productRepository = productRepository;
         this.sizeService = sizeService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/tops")
@@ -220,6 +223,46 @@ public class ProductController {
         }
         return productService.getNewArrivalsSorted(pageable,name, minPrice, maxPrice);
     }
+
+    @GetMapping("/sort/top-sellers")
+    public Page<Product> getTopSellersSorted(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "6") int size,
+                                             @RequestParam(required = false) String sort,
+                                             @RequestParam(required = false) String name,
+                                             @RequestParam(required = false) String priceRange) {
+
+        Pageable pageable;
+        switch (sort != null ? sort.toLowerCase() : "") {
+            case "price-asc":
+                pageable = PageRequest.of(page, size, Sort.by("price").ascending());
+                break;
+            case "price-desc":
+                pageable = PageRequest.of(page, size, Sort.by("price").descending());
+                break;
+            case "name-asc":
+                pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+                break;
+            case "name-desc":
+                pageable = PageRequest.of(page, size, Sort.by("name").descending());
+                break;
+            default:
+                pageable = PageRequest.of(page, size);
+                break;
+        }
+
+        Integer minPrice = null;
+        Integer maxPrice = null;
+        if (priceRange != null && priceRange.contains("-")) {
+            String[] parts = priceRange.split("-");
+            try {
+                minPrice = Integer.parseInt(parts[0]);
+                maxPrice = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        return orderService.getTopSellersSorted(pageable, name, minPrice, maxPrice);
+    }
+
 
     @PostMapping("/add-product")
     public Product addTop(@RequestBody ProductDTO dto) {

@@ -83,7 +83,7 @@ const ChatBox = () => {
           setMessages((prev) => [...prev, msg]);
 
           if (!chatVisibleRef.current) {
-            setUnreadCount((prev) => prev + 1);
+            setUnreadCount((prev) => prev );
             setHasNewMessage(true);
           }
           setTimeout(() => scrollToBottom(), 50);
@@ -115,14 +115,39 @@ const ChatBox = () => {
             });
           });
         });
+        client.subscribe("/user/queue/unread-notify", (message) => {
+          try {
+            const unreadList = JSON.parse(message.body); // mảng gồm userId + unreadCount
+            console.log(unreadList);
+            setUnreadCount(unreadList); // số người dùng có tin chưa đọc
+
+            // Cập nhật lại danh sách users để hiển thị badge bên cạnh mỗi user
+
+          } catch (e) {
+            console.error("Lỗi xử lý unread notify:", e);
+          }
+        });
       },
     });
+    
+
+
 
     client.activate();
     stompClient.current = client;
 
     return () => client.deactivate();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      axios.get(`http://localhost:8080/api/admin/chat/unread-count/${user.id}`).then((res) => {
+        setUnreadCount(res.data);
+        console.log(res.data);
+      });
+    }
+  }, [user]);
+
 
 
   const handleScroll = () => {
@@ -202,24 +227,37 @@ const ChatBox = () => {
             msg.id === lastMsg.id ? { ...msg, status: "READ" } : msg
           )
         );
+        console.log(unreadCount);
+        if (unreadCount > 0) {
+          setUnreadCount((prev) => prev - 1);
+        }
+
       });
     }
   }, [chatVisible, messages]);
+  console.log(unreadCount);
 
   const handleToggleChat = async () => {
-        setChatVisible((prev) => {
-            const nextState = !prev;
+    setChatVisible((prev) => {
+      const nextState = !prev;
 
-            return nextState;
-        });
+      return nextState;
+    });
+    if (!chatVisible && messages.length === 0) {
+    // 👇 Gửi yêu cầu để admin gửi tin nhắn chào mừng
+    await axios.post("http://localhost:8080/api/admin/chat/welcome", {
+      userId: user.id,
+    });
+  }
 
-        setTimeout(() => {
-            scrollToBottom();
-        }, 0);
-    };
+    setTimeout(() => {
+      scrollToBottom();
+    }, 0);
+  };
 
 
 
+  console.log(unreadCount);
   return (
     <>
       {user && (

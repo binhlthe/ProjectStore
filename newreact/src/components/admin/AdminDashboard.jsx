@@ -1,5 +1,4 @@
-// AdminDashboard.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { FaBoxOpen, FaClipboardList, FaChartLine } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
@@ -15,24 +14,21 @@ function AdminDashboard() {
 
   const cards = [
     {
-      icon: <FaChartLine className="text-4xl text-white" />,
+      icon: <FaChartLine className="text-4xl text-gray-700" />,
       title: "Doanh Thu",
       description: "Xem báo cáo doanh thu và xu hướng kinh doanh",
-      bgColor: "bg-gradient-to-tr from-blue-500 to-blue-700",
       onClick: () => navigate("/admin/revenue"),
     },
     {
-      icon: <FaBoxOpen className="text-4xl text-white" />,
+      icon: <FaBoxOpen className="text-4xl text-gray-700" />,
       title: "Quản lý sản phẩm",
       description: "Thêm mới, chỉnh sửa và ẩn sản phẩm",
-      bgColor: "bg-gradient-to-tr from-green-500 to-green-700",
       onClick: () => navigate("/admin/product"),
     },
     {
-      icon: <FaClipboardList className="text-4xl text-white" />,
+      icon: <FaClipboardList className="text-4xl text-gray-700" />,
       title: "Đơn hàng",
       description: "Xem, duyệt và xử lý các đơn hàng",
-      bgColor: "bg-gradient-to-tr from-yellow-500 to-yellow-700",
       onClick: () => navigate("/admin/order"),
     },
   ];
@@ -45,26 +41,24 @@ function AdminDashboard() {
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold text-gray-800 mb-10 text-center">Bảng Điều Khiển Quản Trị</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cards.map((card, index) => (
               <div
                 key={index}
                 onClick={card.onClick}
-                className={`relative cursor-pointer rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ${card.bgColor}`}
+                className="cursor-pointer rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 transform transition duration-200 p-6"
               >
-                <div className="absolute inset-0 opacity-10 bg-pattern" />
-                <div className="p-6">
-                  <div className="mb-4">{card.icon}</div>
-                  <h2 className="text-2xl font-bold text-white mb-2">{card.title}</h2>
-                  <p className="text-white text-sm">{card.description}</p>
-                </div>
+                <div className="mb-4">{card.icon}</div>
+                <h2 className="text-xl font-semibold text-gray-800 mb-1">{card.title}</h2>
+                <p className="text-gray-600 text-sm">{card.description}</p>
               </div>
             ))}
           </div>
         </div>
-        <AdminChatBox/>
-      </main>
 
+        <AdminChatBox />
+      </main>
     </div>
   );
 }

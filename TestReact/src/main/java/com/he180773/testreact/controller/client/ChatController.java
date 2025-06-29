@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class ChatController {
@@ -35,6 +37,7 @@ public class ChatController {
         entity.setContent(message.getContent());
         entity.setChatRoomId(message.getChatRoomId());
         entity.setSentAt(LocalDateTime.now());
+        entity.setStatus("UNREAD");
         Message saved= messageRepository.save(entity);
 
         message.setSentAt(LocalDateTime.now());
@@ -43,6 +46,37 @@ public class ChatController {
 
         // Gửi về tất cả admin đang theo dõi (nếu có)
         messagingTemplate.convertAndSend("/topic/admin-messages", saved);
+
+        // Sau khi lưu message
+
+        List<Message> messages= messageRepository.findAllByReceiverIdAndStatus("admin","UNREAD");
+        List<Message> unreadMessage = new ArrayList<>();
+        for(Message m : messages){
+            System.out.println("MessageChatRoom  : " + m.getChatRoomId());
+            if(unreadMessage.size()==0){
+                unreadMessage.add(m);
+            }
+            else{
+
+                for(Message m2 : unreadMessage){
+                    if(!m2.getSenderId().equals(m.getSenderId())){
+                        unreadMessage.add(m2);
+                    }
+                }
+            }
+        }
+
+        Integer countUnread = messageRepository.countByReceiverIdAndStatus(message.getReceiverId(),"UNREAD");
+        System.out.println("unreadMessage: " + unreadMessage);
+// Gửi số lượng tin chưa đọc lên topic riêng
+        messagingTemplate.convertAndSend("/topic/unread-notify", unreadMessage);
+
+        System.out.println("countUnread: " + countUnread);
+        System.out.println("receiverId: " + message.getReceiverId());
+        messagingTemplate.convertAndSendToUser(String.valueOf(message.getReceiverId()),
+                "/queue/unread-notify",
+                countUnread);
+
 
 
 // Gửi về cho người gửi (nếu cần echo lại)

@@ -1,5 +1,6 @@
 package com.he180773.testreact.controller.admin;
 
+import com.he180773.testreact.dto.ChatMessage;
 import com.he180773.testreact.dto.ChatUserDTO;
 import com.he180773.testreact.entity.Message;
 import com.he180773.testreact.entity.User;
@@ -13,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -123,54 +125,156 @@ public class AdminChatController {
 
     @PostMapping("/markAsRead")
     public ResponseEntity<Void> markAsRead(@RequestBody Map<String, Object> payload) {
-        System.out.println("payload: "+payload);
-        System.out.println("MessageId: "+payload.get("messageId"));
-        System.out.println("UserId: "+payload.get("userId"));
         Long messageId = Long.parseLong(payload.get("messageId").toString());
         String currentUserId = payload.get("userId").toString();
+        System.out.println(messageId+" meeee");
 
         Optional<Message> optionalMessage = messageRepository.findById(messageId);
         if (optionalMessage.isEmpty()) return ResponseEntity.notFound().build();
 
         Message message = optionalMessage.get();
-        Message saved = new Message();
-        System.out.println("SenderId: "+message.getSenderId());
-        System.out.println(!message.getSenderId().equals("admin"));
+        String chatRoomId = message.getChatRoomId();
+        String senderId = message.getSenderId();
+        String receiverId = message.getReceiverId();
+        List<Message> ms= messageRepository.findAll();
+        for(Message m : ms){
+            System.out.println("Status: "+"id "+m.getId()+m.getStatus());
+            System.out.println("Sent_at: "+m.getSentAt()+" "+message.getSentAt());
+        }
 
-        // Chỉ update nếu currentUser là người nhận và chưa đọc
-        if(message.getSenderId().equals("admin")) {
-            System.out.println("hihihihii");
-            if (message.getReceiverId().equals(currentUserId) && !"READ".equals(message.getStatus())) {
-                System.out.println("hihi");
-                message.setStatus("READ");
-                saved=messageRepository.save(message);
+        // Tìm tất cả tin nhắn chưa đọc trong cùng chatRoom và gửi trước hoặc bằng thời gian hiện tại
+        List<Message> unreadMessages = messageRepository.findUnreadMessagesBefore(
+                chatRoomId,
+                receiverId
+        );
+
+        System.out.println(unreadMessages+" unread");
+
+        for (Message m : unreadMessages) {
+            m.setStatus("READ");
+        }
+
+        List<Message> updated = messageRepository.saveAll(unreadMessages);
+
+        // Gửi thông báo chỉ với tin nhắn cuối cùng được đọc (cho avatar hiện đúng vị trí)
+        System.out.println("sender ne: "+ senderId);
+        System.out.println(updated+" hihihihii");
+        if (!updated.isEmpty()) {
+            Message lastRead = updated.get(updated.size() - 1);
+
+            if ("admin".equals(senderId)) {
                 messagingTemplate.convertAndSend(
-                        "/topic/message-read/" + message.getReceiverId(),
-                        saved
+                        "/topic/message-read/" + receiverId,
+                        lastRead
                 );
+            } else {
+                System.out.println("senderId hehehee: "+senderId);
 
-            }
-        } else{
-            System.out.println("hihiih: "+!"READ".equals(message.getStatus()));
-            if(!"READ".equals(message.getStatus())){
-                System.out.println("hehe");
-                message.setStatus("READ");
-                saved=messageRepository.save(message);
 
                 messagingTemplate.convertAndSendToUser(
-                        String.valueOf(message.getSenderId()),
+                        senderId,
                         "/queue/message-read",
-                        saved
+                        lastRead
                 );
             }
         }
 
-
-
-
-
         return ResponseEntity.ok().build();
     }
+
+
+
+    @GetMapping("/unread-count/{userId}")
+    public ResponseEntity<?> countUnreadMessages(@PathVariable String userId) {
+        List<Message> messages= new ArrayList<>();
+        if(!userId.equals("admin")){
+            messages= messageRepository.findAllByReceiverIdAndStatus(userId.toString(),"UNREAD");
+
+        } else{
+            messages= messageRepository.findAllByReceiverIdAndStatus("admin","UNREAD");
+        }
+        System.out.println("Messages: " + messages.size() + " for user: " + userId);
+
+        List<Message> unreadMessage = new ArrayList<>();
+        for(Message m : messages){
+            System.out.println("MessageChatRoom  : " + m.getChatRoomId());
+            if(unreadMessage.size()==0){
+                unreadMessage.add(m);
+            }
+            else{
+
+                for(Message m2 : unreadMessage){
+                    if(!m2.getSenderId().equals(m.getSenderId())){
+                        unreadMessage.add(m2);
+                    }
+                }
+            }
+        }
+        System.out.println(unreadMessage+" unread");
+        Integer countUnread = messageRepository.countByReceiverIdAndStatus(userId,"UNREAD");
+
+        if(!userId.equals("admin")){
+            return ResponseEntity.ok().body(countUnread);
+        } else{
+            return ResponseEntity.ok().body(unreadMessage);
+        }
+    }
+
+
+    @PostMapping("/welcome")
+    public ResponseEntity<?> sendWelcomeMessage(@RequestBody Map<String, String> payload) {
+        String userId = payload.get("userId");
+
+        if (userId == null) return ResponseEntity.badRequest().body("UserId is required");
+
+        Message welcomeMessage = new Message();
+        welcomeMessage.setSenderId("admin");
+        welcomeMessage.setReceiverId(userId);
+        welcomeMessage.setContent("👋 Xin chào! Shop có thể hỗ trợ gì cho bạn?");
+        welcomeMessage.setChatRoomId(userId + "-admin");
+        welcomeMessage.setSentAt(LocalDateTime.now());
+        welcomeMessage.setStatus("UNREAD");
+
+        // Lưu DB và gửi qua WebSocket
+        Message saved= messageRepository.save(welcomeMessage);
+
+        messagingTemplate.convertAndSend("/topic/admin-messages", saved);
+
+        // Sau khi lưu message
+
+        List<Message> messages= messageRepository.findAllByReceiverIdAndStatus("admin","UNREAD");
+        List<Message> unreadMessage = new ArrayList<>();
+        for(Message m : messages){
+            System.out.println("MessageChatRoom  : " + m.getChatRoomId());
+            if(unreadMessage.size()==0){
+                unreadMessage.add(m);
+            }
+            else{
+
+                for(Message m2 : unreadMessage){
+                    if(!m2.getSenderId().equals(m.getSenderId())){
+                        unreadMessage.add(m2);
+                    }
+                }
+            }
+        }
+// Gửi số lượng tin chưa đọc lên topic riêng
+        messagingTemplate.convertAndSend("/topic/unread-notify", unreadMessage);
+        System.out.println("sent message"+ String.valueOf(welcomeMessage.getReceiverId()));
+        messagingTemplate.convertAndSendToUser(
+                String.valueOf(welcomeMessage.getReceiverId()),
+                "/queue/messages",
+                saved
+        );
+
+        return ResponseEntity.ok("Sent");
+    }
+
+
+
+
+// Gửi về cho người gửi (nếu cần echo lại)
+
 
 
 

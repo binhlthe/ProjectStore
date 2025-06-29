@@ -98,9 +98,10 @@ function HomePage() {
 
     return (
       <div
-  className="relative border rounded-xl shadow hover:shadow-lg transition-all bg-white p-3 flex flex-col cursor-pointer"
+  className="relative border rounded-xl shadow-sm hover:shadow-md transform hover:-translate-y-1 transition-all bg-white p-3 flex flex-col cursor-pointer"
   onClick={handleClick}
 >
+
   <div className="relative w-full aspect-[3/4] mb-2">
     <img
       src={product.thumbnailImage}
