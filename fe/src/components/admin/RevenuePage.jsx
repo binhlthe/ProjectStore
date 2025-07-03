@@ -20,6 +20,7 @@ const RevenuePage = () => {
     const cached = localStorage.getItem("user");
     return cached ? JSON.parse(cached) : null;
   });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   document.title = "REVENUE - Levents";
 
@@ -53,8 +54,8 @@ const RevenuePage = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <AdminSidebar user={user} />
-      <Navbar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <AdminSidebar user={user} isOpen={sidebarOpen} />
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden mt-6">
         {/* Navbar */}
@@ -115,36 +116,36 @@ const RevenuePage = () => {
 
           {/* Biểu đồ doanh thu */}
           <div className="w-full h-96 bg-white border rounded shadow mb-6">
-<ResponsiveContainer width="100%" height="100%">
-  <LineChart
-    data={dailyRevenue}
-    margin={{ top: 20, right: 30, left: 30, bottom: 30 }}
-  >
-    <CartesianGrid strokeDasharray="3 3" />
-    
-    <XAxis
-      dataKey="orderDay"
-      tick={{ fontSize: 12, dy: 10 }} // đẩy chữ X xuống
-      padding={{ left: 20, right: 20 }}
-    />
-    
-    <YAxis
-      tickFormatter={(val) => `${val / 1000}k`}
-      tick={{ fontSize: 12, dx: -5 }} // đẩy chữ Y ra xa trục
-    />
-    
-    <Tooltip formatter={(val) => `${val.toLocaleString()} VND`} />
-    
-    <Line
-      type="monotone"
-      dataKey="totalRevenue"
-      stroke="#4F46E5"
-      strokeWidth={2}
-      dot={{ r: 4 }} // điểm bo tròn đẹp
-      activeDot={{ r: 6 }}
-    />
-  </LineChart>
-</ResponsiveContainer>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={dailyRevenue}
+                margin={{ top: 20, right: 30, left: 30, bottom: 30 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+
+                <XAxis
+                  dataKey="orderDay"
+                  tick={{ fontSize: 12, dy: 10 }} // đẩy chữ X xuống
+                  padding={{ left: 20, right: 20 }}
+                />
+
+                <YAxis
+                  tickFormatter={(val) => `${val / 1000}k`}
+                  tick={{ fontSize: 12, dx: -5 }} // đẩy chữ Y ra xa trục
+                />
+
+                <Tooltip formatter={(val) => `${val.toLocaleString()} VND`} />
+
+                <Line
+                  type="monotone"
+                  dataKey="totalRevenue"
+                  stroke="#4F46E5"
+                  strokeWidth={2}
+                  dot={{ r: 4 }} // điểm bo tròn đẹp
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
 
           </div>
 

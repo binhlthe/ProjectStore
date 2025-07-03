@@ -62,6 +62,7 @@ const AdminOrderPage = () => {
         const cached = localStorage.getItem("user");
         return cached ? JSON.parse(cached) : null;
     });
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     document.title = "ORDER - Levents";
     const navigate = useNavigate();
@@ -165,8 +166,8 @@ const AdminOrderPage = () => {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <Navbar user={user} />
-            <AdminSidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <AdminSidebar user={user} isOpen={sidebarOpen} />
 
             <main className="flex-1 mt-[80px] p-6 overflow-auto">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">Quản lý đơn hàng</h2>

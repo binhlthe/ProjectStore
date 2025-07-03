@@ -11,6 +11,7 @@ function AdminDashboard() {
     const cached = localStorage.getItem("user");
     return cached ? JSON.parse(cached) : null;
   });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   document.title = "Levents";
 
@@ -37,8 +38,8 @@ function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <Navbar user={user} />
-      <AdminSidebar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <AdminSidebar user={user} isOpen={sidebarOpen} />
 
       <main className="flex-1 mt-[150px] p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">

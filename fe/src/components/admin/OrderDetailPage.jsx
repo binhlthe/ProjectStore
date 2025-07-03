@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import Navbar from '../Navbar';
@@ -16,27 +16,27 @@ const OrderDetailPage = () => {
         const cached = localStorage.getItem('user');
         return cached ? JSON.parse(cached) : null;
     });
-
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     document.title = "ORDER - Levents";
 
     const [parsedAddress, setParsedAddress] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null); // Modal image
     const [setShowUserDropdown] = useState(false);
-        const dropdownContainerRef = useRef(null);
-    
+    const dropdownContainerRef = useRef(null);
+
     useEffect(() => {
-            document.addEventListener("mousedown", handleClickOutside);
-            return () => document.removeEventListener("mousedown", handleClickOutside);
-        }, []);
-    
-        const handleClickOutside = (event) => {
-            if (
-                dropdownContainerRef.current &&
-                !dropdownContainerRef.current.contains(event.target)
-            ) {
-                setShowUserDropdown(false);
-            }
-        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleClickOutside = (event) => {
+        if (
+            dropdownContainerRef.current &&
+            !dropdownContainerRef.current.contains(event.target)
+        ) {
+            setShowUserDropdown(false);
+        }
+    };
 
     useEffect(() => {
         axios
@@ -58,8 +58,8 @@ const OrderDetailPage = () => {
 
     return (
         <div className="flex bg-gray-100 h-screen">
-            <Navbar user={user} />
-            <AdminSidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <AdminSidebar user={user} isOpen={sidebarOpen} />
 
             <div className="flex-1 p-6 mt-16 overflow-y-auto">
                 <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6">
@@ -100,11 +100,11 @@ const OrderDetailPage = () => {
                             <div key={index} className="flex items-center justify-between bg-gray-50 border rounded-lg p-4">
                                 <div className="flex items-center gap-4">
                                     <img
-                                            src={item.image}
-                                            alt={item.productName}
-                                            className="w-10 h-10 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
-                                             onClick={() => setSelectedImage(item.image)}
-                                        />
+                                        src={item.image}
+                                        alt={item.productName}
+                                        className="w-10 h-10 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                                        onClick={() => setSelectedImage(item.image)}
+                                    />
                                     <div>
                                         <p className="font-semibold">{item.productName}</p>
                                         <p className="text-sm text-gray-500">Màu: {item.color} | Size: {item.size}</p>
@@ -133,7 +133,7 @@ const OrderDetailPage = () => {
                     />
                 </div>
             )}
-            <AdminChatBox/>
+            <AdminChatBox />
         </div>
     );
 };

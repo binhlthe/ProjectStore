@@ -23,8 +23,11 @@ function HomePage() {
   const [bottoms, setBottoms] = useState([]);
   const [accessories, setAccessories] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  
 
   // Refs for click-outside detection
   const dropdownContainerRef = useRef(null); // Ref for the div wrapping user icon and dropdown
@@ -129,15 +132,12 @@ function HomePage() {
     <div className="flex h-screen bg-gray-100">
       {/* Top Bar */}
 
-      <Navbar user={user} />
-      {/* Sidebar */}
-      <Sidebar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar user={user} isOpen={sidebarOpen} />
+
 
       {/* Main Content */}
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-8 ">
-        {/* Removed the overlay div as requested */}
-
-
         <div>
           <img
             src="/images/banner.png"

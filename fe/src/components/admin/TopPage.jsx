@@ -12,8 +12,9 @@ function TopPage() {
         const cached = localStorage.getItem("user");
         return cached ? JSON.parse(cached) : null;
     });
-    const  [setShowUserDropdown] = useState(false);
+    const [setShowUserDropdown] = useState(false);
     const dropdownContainerRef = useRef(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     document.title = "TOP - Levents";
 
@@ -69,8 +70,8 @@ function TopPage() {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <Navbar user={user} />
-            <AdminSidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <AdminSidebar user={user} isOpen={sidebarOpen} />
 
             <div className="flex-1 p-8 mt-16 overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">

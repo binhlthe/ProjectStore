@@ -23,6 +23,8 @@ function ProfilePage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -129,7 +131,7 @@ function ProfilePage() {
       }
     }
 
-    
+
 
     setErrors(newErrors);
 
@@ -151,8 +153,8 @@ function ProfilePage() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Navbar user={user} />
-      <Sidebar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar user={user} isOpen={sidebarOpen} />
 
       <main className="flex-1 mt-[72px] p-6 overflow-y-auto bg-gradient-to-br from-blue-50 to-gray-100">
         <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">

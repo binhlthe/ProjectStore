@@ -34,6 +34,8 @@ public class User {
     private Date dob;
     @Column(name = "Status")
     private boolean status;
+    @Column(name = "verified")
+    private boolean verified;
 
     public Long getId() {
         return id;
@@ -129,5 +131,13 @@ public class User {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }

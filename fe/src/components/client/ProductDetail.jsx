@@ -16,6 +16,7 @@ function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [currentImage, setCurrentImage] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const colorOptions = [
     'Trắng', 'Đen', 'Xám', 'Xanh navy', 'Xanh dương', 'Xanh lá',
@@ -36,7 +37,7 @@ function ProductDetail() {
 
   console.log(allColors);
   // Những size có thể chọn theo selectedColor
-  
+
   const isColorAvailable = (color) => {
     if (!selectedSize) return true; // Nếu chưa chọn size thì mọi color đều có thể chọn
 
@@ -169,8 +170,8 @@ function ProductDetail() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Navbar user={user} />
-      <Sidebar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar user={user} isOpen={sidebarOpen} />
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg p-6 shadow-md">
           <div className="grid grid-cols-6 gap-6">

@@ -12,13 +12,16 @@ const OrderSuccessPage = () => {
         return cached ? JSON.parse(cached) : null;
     });
 
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
     document.title = "ORDER - Levents";
 
     return (
         <div className="flex flex-col h-screen bg-gray-50">
-            <Navbar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      
             <div className="flex flex-1 overflow-hidden">
-                <Sidebar user={user} />
+                <Sidebar user={user} isOpen={sidebarOpen} />
                 <main className="flex-1 p-6 overflow-y-auto">
                     <div className="max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-8 text-center mt-20">
                         <CheckCircle className="mx-auto text-green-500 w-20 h-20 animate-pulse" />

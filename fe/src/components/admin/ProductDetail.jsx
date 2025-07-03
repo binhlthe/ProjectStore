@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import Slider from 'react-slick';
-import Sidebar from "./AdminSidebar";
+import AdminSidebar from "./AdminSidebar";
 import Navbar from "../Navbar";
 import AdminChatBox from "./AdminChatBox";
 import { FaChevronLeft, FaChevronRight, FaTimes, FaEdit, FaEyeSlash } from 'react-icons/fa';
@@ -27,6 +27,7 @@ const ProductDetail = () => {
   const [variantToEdit, setVariantToEdit] = useState(null);
   const [isEditColorModalOpen, setIsEditColorModalOpen] = useState(false);
   const [editColorImages, setEditColorImages] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
 
@@ -84,7 +85,7 @@ const ProductDetail = () => {
 
   const handleAddVariant = async () => {
     try {
-      
+
       let imageUrls = [];
 
       const payload = {
@@ -105,7 +106,7 @@ const ProductDetail = () => {
       const variantRes = await axios.get(`http://localhost:8080/api/productVariant/product/${id}`);
       const variantList = (variantRes.data || []).sort((a, b) => {
         const colorDiff = colorOptions.indexOf(a.color) - colorOptions.indexOf(b.color);
-        
+
         if (colorDiff !== 0) return colorDiff;
         return sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size);
       });
@@ -120,7 +121,7 @@ const ProductDetail = () => {
     try {
       const price = parseInt(newVariant.price);
       const quantity = parseInt(newVariant.quantity);
-      
+
 
       const existing = variants.find(
         v => v.color === selectedColorForSize && v.size === newVariant.size
@@ -290,8 +291,8 @@ const ProductDetail = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Navbar user={user} />
-      <Sidebar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <AdminSidebar user={user} isOpen={sidebarOpen} />
 
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto">
         <div className="flex gap-8">

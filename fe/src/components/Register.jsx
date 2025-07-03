@@ -14,6 +14,8 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
+  const [email, setEmail] = useState('');
+
 
   document.title = "REGISTER";
 
@@ -24,6 +26,7 @@ export default function Register() {
       const res = await axios.post('http://localhost:8080/api/register', {
         username,
         name,
+        email,
         password,
         confirmPassword,
       });
@@ -32,11 +35,12 @@ export default function Register() {
         Swal.fire({
           icon: 'success',
           title: 'Đăng ký thành công!',
-          text: 'Bạn sẽ được chuyển hướng đến trang đăng nhập.',
-          confirmButtonText: 'OK',
+          text: 'Chúng tôi đã gửi mã OTP đến email của bạn.',
+          confirmButtonText: 'Xác nhận'
         }).then(() => {
-          navigate('/login');
+          navigate(`/verify-email?email=${encodeURIComponent(email)}`);
         });
+
       } else {
         setExist(res.data);
       }
@@ -85,24 +89,24 @@ export default function Register() {
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Đăng ký</h2>
 
         <form onSubmit={handleRegister} className="space-y-5">
-          {/* Display Name */}
+
+
+          {/* Email */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Tên người dùng</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
             <div className="relative">
               <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
-                type="text"
-                placeholder="Nhập tên người dùng"
+                type="email"
+                placeholder="Nhập email"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-
             </div>
-            {errors.name && <p className="text-red-600 font-medium">{errors.name}</p>}
-
+            {errors.email && <p className="text-red-600 font-medium">{errors.email}</p>}
           </div>
+
 
           {/* Username */}
           <div>
@@ -156,6 +160,25 @@ export default function Register() {
 
             </div>
             {errors.confirmPassword && <p className="text-red-600 font-medium">{errors.confirmPassword}</p>}
+          </div>
+
+          {/* Display Name */}
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Tên người dùng</label>
+            <div className="relative">
+              <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Nhập tên người dùng"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+
+              />
+
+            </div>
+            {errors.name && <p className="text-red-600 font-medium">{errors.name}</p>}
+
           </div>
 
           {message && <p className="text-red-600 font-medium">{message}</p>}

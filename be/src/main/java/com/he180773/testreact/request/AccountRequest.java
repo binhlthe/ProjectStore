@@ -4,6 +4,7 @@ public  class AccountRequest {
     private String name;
     private String username;
     private String password;
+    private String email;
     private String confirmPassword;
 
     // Getters + Setters
@@ -39,5 +40,13 @@ public  class AccountRequest {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

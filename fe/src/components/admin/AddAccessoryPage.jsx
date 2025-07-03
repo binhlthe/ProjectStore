@@ -14,6 +14,8 @@ function AddAccessoryPage() {
     const [errors, setErrors] = useState({});
 
     const navigate = useNavigate();
+
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         category: "accessory",
@@ -115,8 +117,8 @@ function AddAccessoryPage() {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <Navbar user={user} />
-            <AdminSidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <AdminSidebar user={user} isOpen={sidebarOpen} />
 
             <div className="flex-1 mt-28 p-6 overflow-y-auto">
                 <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-md">
@@ -203,7 +205,7 @@ function AddAccessoryPage() {
                     </form>
                 </div>
             </div>
-            <AdminChatBox/>
+            <AdminChatBox />
         </div>
     );
 }

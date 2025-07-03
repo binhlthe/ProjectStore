@@ -12,13 +12,14 @@ function AccessoryPage() {
         const cached = localStorage.getItem("user");
         return cached ? JSON.parse(cached) : null;
     });
-    const [ setShowUserDropdown] = useState(false);
+    const [setShowUserDropdown] = useState(false);
     const dropdownContainerRef = useRef(null);
 
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const itemsPerPage = 5;
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
     document.title = "ACCESSORY - Levents";
@@ -69,8 +70,8 @@ function AccessoryPage() {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <Navbar user={user} />
-            <AdminSidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <AdminSidebar user={user} isOpen={sidebarOpen} />
 
             <div className="flex-1 p-8 mt-16 overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
@@ -115,7 +116,7 @@ function AccessoryPage() {
                                     <td className="py-3 px-4 border-b">
                                         {Number(product.price).toLocaleString("vi-VN")}₫
                                     </td>
-                                    <td className="py-3 px-4 border-b">{product.totalQuantity? product.totalQuantity : 0}</td>
+                                    <td className="py-3 px-4 border-b">{product.totalQuantity ? product.totalQuantity : 0}</td>
                                     <td className="py-3 px-4 border-b text-center">
                                         <button
                                             onClick={() => handleView(product)}
@@ -174,7 +175,7 @@ function AccessoryPage() {
                     />
                 </div>
             )}
-            <AdminChatBox/>
+            <AdminChatBox />
         </div>
     );
 }

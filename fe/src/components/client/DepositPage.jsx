@@ -12,6 +12,7 @@ const DepositPage = ({ }) => {
     const accountName = "Le Tien Binh"; // tên tài khoản nhận tiền
     const [timestamp, setTimestamp] = useState(Date.now()); // để làm QR thay đổi
     const [transactionCode, setTransactionCode] = useState("");
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const [user] = useState(() => {
         const cached = localStorage.getItem("user");
@@ -89,11 +90,9 @@ const DepositPage = ({ }) => {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            {/* Top Bar */}
 
-            <Navbar user={user} />
-            {/* Sidebar */}
-            <Sidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <Sidebar user={user} isOpen={sidebarOpen} />
             <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-8 ">
                 <h1 className="text-xl font-bold mb-4">Nạp tiền vào ví</h1>
 

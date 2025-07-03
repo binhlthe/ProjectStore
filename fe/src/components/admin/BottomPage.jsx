@@ -22,6 +22,7 @@ function BottomPage() {
     const itemsPerPage = 5;
 
     const [selectedImage, setSelectedImage] = useState(null); // Modal image
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
@@ -68,8 +69,8 @@ function BottomPage() {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <Navbar user={user} />
-            <AdminSidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <AdminSidebar user={user} isOpen={sidebarOpen} />
 
             <div className="flex-1 p-8 mt-16 overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
@@ -173,7 +174,7 @@ function BottomPage() {
                     />
                 </div>
             )}
-            <AdminChatBox/>
+            <AdminChatBox />
         </div>
     );
 }

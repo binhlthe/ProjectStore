@@ -6,11 +6,12 @@ import { Link } from "react-router-dom";
 import { useCart } from "./client/CartContext";
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
+import SidebarToggleButton from "./SidebarToggleButton";
 
 
 
 
-function Navbar() {
+function Navbar({ onToggleSidebar }) {
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity } = useCart();
   const [selectedItems, setSelectedItems] = useState([]);
   const [showCart, setShowCart] = useState(false);
@@ -152,18 +153,24 @@ function Navbar() {
 
 
   return (
-    <header className="bg-white shadow-md flex items-center justify-between px-6 w-full fixed top-0 h-[66px] z-30">
-      <div className="flex items-center gap-2">
-        <div className="text-2xl font-bold text-blue-600">
+    <header className="bg-white shadow-md flex items-center justify-between px-4 sm:px-6 w-full fixed top-0 h-[66px] z-30">
+      <div className="flex items-center gap-2 min-w-0">
+        {onToggleSidebar && (
+          <div className="shrink-0">
+            <SidebarToggleButton onClick={onToggleSidebar} />
+          </div>
+        )}
+        <div className="shrink min-w-0">
           <Link to={user && user.role === "ADMIN" ? "/admin" : "/home"}>
             <img
               src="/images/logo2.png"
               alt="Banner"
-              className="h-[30px] object-cover"
+              className="h-[30px] object-contain max-w-[120px] sm:max-w-none"
             />
           </Link>
         </div>
       </div>
+
 
       <div className="flex items-center gap-2 relative group">
         {((user?.role === "USER") || (!user)) && (
@@ -173,10 +180,11 @@ function Navbar() {
               placeholder="Tìm kiếm..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-[300px] py-3 mr-10 border-2 border-gray-300 rounded-full text-sm 
-             focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent
-             transition-all duration-300 ease-in-out shadow-sm hover:shadow-md placeholder-gray-400"
+              className="pl-10 py-3 w-[160px] sm:w-[200px] md:w-[300px] lg:w-[400px] border border-gray-300 rounded-full text-sm
+    focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent
+    transition-all duration-300 ease-in-out shadow-sm hover:shadow-md placeholder-gray-400"
             />
+
 
 
 

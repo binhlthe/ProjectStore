@@ -13,6 +13,10 @@ const UserDropdown = ({ user, isOpen, onClose }) => {
     navigate("/user/profile");
   }
 
+  function handleChangePassword(){
+    navigate("/change-password");
+  }
+
   const handleLogout = async () => {
     try {
       const res = await axios.post('http://localhost:8080/api/logout', {}, { withCredentials: true });
@@ -91,7 +95,7 @@ const UserDropdown = ({ user, isOpen, onClose }) => {
               className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left"
               onClick={
 
-                handleUserPofile
+                handleChangePassword
               }
             >
 

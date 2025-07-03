@@ -26,6 +26,7 @@ const UserOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [selectedTab, setSelectedTab] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
   const [user] = useState(() => {
@@ -49,9 +50,9 @@ const UserOrdersPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-           await axios.put(`http://localhost:8080/api/admin/order/${orderId}/cancel`);
+          await axios.put(`http://localhost:8080/api/admin/order/${orderId}/cancel`);
           Swal.fire('Đã hủy!', 'Đơn hàng đã được hủy.', 'success');
-          
+
           fetchOrders(); // load lại danh sách
         } catch (err) {
           Swal.fire('Lỗi', 'Không thể hủy đơn hàng', 'error');
@@ -150,9 +151,8 @@ const UserOrdersPage = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Navbar user={user} />
-      {/* Sidebar */}
-      <Sidebar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar user={user} isOpen={sidebarOpen} />
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-8 ">
         <h2 className="text-2xl font-bold mb-4">Đơn hàng của bạn</h2>
 

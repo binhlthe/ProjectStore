@@ -17,10 +17,11 @@ function TopSellerPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState('');
-  const [ setShowUserDropdown] = useState(false);
+  const [setShowUserDropdown] = useState(false);
   const dropdownContainerRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   document.title = "TOP SELLER - Levents";
 
@@ -77,8 +78,8 @@ function TopSellerPage() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Navbar user={user} />
-      <Sidebar user={user} />
+      <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+      <Sidebar user={user} isOpen={sidebarOpen} />
 
       <main className="flex-1 mt-[72px] p-8 overflow-y-auto space-y-6">
         <div className="flex justify-between items-center">

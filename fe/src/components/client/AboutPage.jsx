@@ -11,13 +11,15 @@ const AboutPage = () => {
         return cached ? JSON.parse(cached) : null;
     });
 
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
     document.title = "ABOUT - Levents";
 
     return (
         <div className="flex h-screen bg-gray-50">
 
-            <Navbar user={user} />
-            <Sidebar user={user} />
+            <Navbar user={user} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <Sidebar user={user} isOpen={sidebarOpen} />
 
             <main className="flex-1 mt-[36px] p-8 overflow-y-auto">
                 {/* Giới thiệu */}
